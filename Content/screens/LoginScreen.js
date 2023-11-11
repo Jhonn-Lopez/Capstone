@@ -1,42 +1,38 @@
-import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
-import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import React, { useState, useContext } from 'react';
+import { View, TextInput, TouchableOpacity, Text, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import { StatusBar } from "expo-status-bar";
+import Animated, {FadeIn, FadeInDown, FadeInUp, FadeOut} from "react-native-reanimated";
+import { AuthContext } from '../AuthContext'; // Asegúrate de que esta es la ruta correcta al archivo AuthContext.js
 
 export default function LoginScreen() {
+  const { authenticate } = useContext(AuthContext);
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     try {
-        const response = await axios.post('http://localhost:8000/api/login/', {
-        email: email.trim(), // Asegurarse de que no hay espacios al inicio/final
-        password: password.trim(), // Asegurarse de que no hay espacios al inicio/final
-        });
+      const response = await axios.post('http://localhost:8000/api/login/', {
+        email: email.trim(),
+        password: password.trim(),
+      });
 
-        if (response.data.token) {
-            // Guardar el token en SecureStore
-            await SecureStore.setItemAsync('userToken', response.data.token);
-            // Redirigir al usuario a la pantalla de inicio/HomeScreen
-            navigation.navigate('Home');
-          } else {
-            Alert.alert('Error', 'Credenciales incorrectas');
-          }
+      if (response.data.token) {
+        authenticate(response.data.token); // Actualiza el estado de autenticación
+        navigation.navigate('Drawer'); // Navega al Drawer Navigator
+      } else {
+        Alert.alert('Error', 'Credenciales incorrectas');
+      }
     } catch (error) {
-        console.error('Error de red:', error);
-        // Si el servidor devuelve un error 401, eso significa que las credenciales son incorrectas
-        if (error.response && error.response.status === 401) {
+      if (error.response && error.response.status === 401) {
         Alert.alert('Error de autenticación', 'Credenciales incorrectas');
-        } else {
-        // Otros errores de red o de servidor
+      } else {
         Alert.alert('Error de red', 'No se pudo conectar al servidor');
-        }
+      }
     }
-    };
+  };
     return (
         <View className="bg-white h-full w-full">
             <StatusBar style="blue-950" />
@@ -50,7 +46,7 @@ export default function LoginScreen() {
             */}
 
 
-                {/* Titulo y formulario */}
+            {/* Titulo y formulario */}
             <View className="h-full w-full flex justify-around pt-40 pb-10">
                 {/* Titulo */}
                 <View className="flex items-center">
@@ -62,24 +58,24 @@ export default function LoginScreen() {
                 {/* Formulario */}
                 <View className="flex items-center mx-4 space-y-4">
                     <Animated.View entering={FadeInDown.delay(200).duration(1000).springify()} className="bg-white p-5 rounded-2xl w-full">
-                        <TextInput placeholder='Email' placeholderTextColor={'gray'} value={email} onChangeText={(text) => setEmail(text)}/>
+                        <TextInput placeholder='Email' placeholderTextColor={'gray'} value={email} onChangeText={(text) => setEmail(text)} />
                     </Animated.View>
 
                     <Animated.View entering={FadeInDown.delay(400).duration(1000).springify()} className="bg-white p-5 rounded-2xl w-full mb-3">
-                        <TextInput placeholder='Password' placeholderTextColor={'gray'} secureTextEntry value={password} onChangeText={(text) => setPassword(text)}/>
+                        <TextInput placeholder='Password' placeholderTextColor={'gray'} secureTextEntry value={password} onChangeText={(text) => setPassword(text)} />
                     </Animated.View>
                     {/* Boton login */}
                     <Animated.View entering={FadeInDown.delay(600).duration(1000).springify()} className="w-full">
                         <TouchableOpacity onPress={handleLogin}
                             className="w-full /*color*/ bg-yellow-500 /*color*/ p-3 rounded-2xl mb-3">
-                                <Text className="text-xl font-bold text-blue-950 text-center">
-                                    Login
-                                </Text>
+                            <Text className="text-xl font-bold text-blue-950 text-center">
+                                Login
+                            </Text>
                         </TouchableOpacity>
                     </Animated.View>
                     <Animated.View entering={FadeInDown.delay(600).duration(1000).springify()} className="flex-row justify-center">
                         <Text className="text-white">Don't have an account?  </Text>
-                        <TouchableOpacity onPress={()=> navigation.push('SignUp')}>
+                        <TouchableOpacity onPress={() => navigation.push('SignUp')}>
                             <Text className="text-yellow-500 font-bold">SignUp </Text>
                         </TouchableOpacity>
                     </Animated.View>
