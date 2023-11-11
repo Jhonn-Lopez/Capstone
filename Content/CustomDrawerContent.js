@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios'; // Asegúrate de importar axios
+import { Alert } from 'react-native';
 
 const CustomDrawerContent = (props) => {
   const [userName, setUserName] = useState('');
@@ -36,9 +37,15 @@ const CustomDrawerContent = (props) => {
   const handleLogout = async () => {
     await SecureStore.deleteItemAsync('userToken');
     // Aquí también deberías borrar cualquier otro dato de usuario almacenado
-    props.navigation.navigate('Login');
-  };
-
+  
+    // Muestra una alerta indicando que el logout fue exitoso
+    Alert.alert('Se ha desconectado correctamente', '', [
+      {
+        text: 'OK',
+        onPress: () => props.navigation.navigate('Login')
+      }
+    ]);
+  }
   return (
     <DrawerContentScrollView {...props}>
       {/* Mostrar el nombre del usuario si está disponible */}
