@@ -18,9 +18,11 @@ export default function LoginScreen() {
         email: email.trim(),
         password: password.trim(),
       });
-
+  
       if (response.data.token) {
         authenticate(response.data.token); // Actualiza el estado de autenticación
+        setEmail(''); // Limpia el campo de email
+        setPassword(''); // Limpia el campo de contraseña
         navigation.navigate('Drawer'); // Navega al Drawer Navigator
       } else {
         Alert.alert('Error', 'Credenciales incorrectas');
