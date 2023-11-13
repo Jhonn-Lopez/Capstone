@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.hashers import check_password
 
 User = get_user_model()
 
@@ -48,6 +49,23 @@ def get_user_info(request):
     return Response({
         
         'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
+        'password':user.password,
         
         # ... otros campos que desees incluir
     })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    user = request.user
+    old_password = request.data.get("old_password")
+    new_password = request.data.get("new_password")
+    
+    if not check_password(old_password, user.password):
+        return Response({"message": "Wrong password."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    user.set_password(new_password)
+    user.save()
+    return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
