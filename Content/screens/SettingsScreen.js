@@ -8,7 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 
 const SettingsScreen = () => {
-  const { logout } = useContext(AuthContext);
+  const { logout, isLoading, error } = useContext(AuthContext);
   const navigation = useNavigation();
   const [userInfo, setUserInfo] = useState({
     firstName: '',
@@ -50,7 +50,7 @@ const SettingsScreen = () => {
       Alert.alert("Error", "Las contraseñas nuevas no coinciden.");
       return;
     }
-  
+
     // Mostrar un mensaje de confirmación antes de proceder
     Alert.alert(
       "Confirmar Cambio de Contraseña",
@@ -75,7 +75,7 @@ const SettingsScreen = () => {
                   'Authorization': `Token ${token}`
                 }
               });
-  
+
               // Si la respuesta es exitosa, mostrar alerta y cerrar sesión
               if (response.status === 200) {
                 Alert.alert("Éxito", "Tu contraseña ha sido cambiada.", [
@@ -98,38 +98,42 @@ const SettingsScreen = () => {
       { cancelable: false } // Esto evita que el alerta se cierre al tocar fuera de él
     );
   };
-  
+
 
   return (
-    <View className="flex items-center mx-4 space-y-4">
-      <View className="pl-3 pt-5 w-full">
-        <Text className="font-bold text-lg text-gray-500">Name: {userInfo.firstName}</Text>
-      </View>
-      <View className="pl-3 w-full">
-        <Text className="font-bold text-lg text-gray-500">Last Name: {userInfo.lastName}</Text>
-      </View>
-      <View className="pl-3 w-full">
-        <Text className="font-bold text-lg text-gray-500">Email: {userInfo.email}</Text>
-      </View>
+    <View className="container">
+      {isLoading && <Text className="loading-indicator">Cargando...</Text>}
+      {error && <Text className="error-message">{error.message}</Text>}
+      <View className="flex items-center mx-4 space-y-4">
+        <View className="pl-3 pt-5 w-full">
+          <Text className="font-bold text-lg text-gray-500">Name: {userInfo.firstName}</Text>
+        </View>
+        <View className="pl-3 w-full">
+          <Text className="font-bold text-lg text-gray-500">Last Name: {userInfo.lastName}</Text>
+        </View>
+        <View className="pl-3 w-full">
+          <Text className="font-bold text-lg text-gray-500">Email: {userInfo.email}</Text>
+        </View>
 
-      <View className="bg-white p-5 rounded-2xl w-full">
-        <TextInput value={currentPassword} onChangeText={setCurrentPassword} placeholder="Current Password" secureTextEntry />
-      </View>
+        <View className="bg-white p-5 rounded-2xl w-full">
+          <TextInput value={currentPassword} onChangeText={setCurrentPassword} placeholder="Current Password" secureTextEntry />
+        </View>
 
-      <View className="bg-white p-5 rounded-2xl w-full">
-        <TextInput value={newPassword} onChangeText={setNewPassword} placeholder="New Password" secureTextEntry />
-      </View>
+        <View className="bg-white p-5 rounded-2xl w-full">
+          <TextInput value={newPassword} onChangeText={setNewPassword} placeholder="New Password" secureTextEntry />
+        </View>
 
-      <View className="bg-white p-5 rounded-2xl w-full">
-        <TextInput value={confirmNewPassword} onChangeText={setConfirmNewPassword} placeholder="Confirm New Password" secureTextEntry />
-      </View>
+        <View className="bg-white p-5 rounded-2xl w-full">
+          <TextInput value={confirmNewPassword} onChangeText={setConfirmNewPassword} placeholder="Confirm New Password" secureTextEntry />
+        </View>
 
-      <TouchableOpacity onPress={handleChangePassword}
-        className="w-full /*color*/ bg-yellow-500 /*color*/ p-3 rounded-2xl mb-3">
-        <Text className="text-xl font-bold text-blue-950 text-center">
-          Change Password
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={handleChangePassword}
+          className="w-full /*color*/ bg-yellow-500 /*color*/ p-3 rounded-2xl mb-3 change-password-button" >
+          <Text className="text-xl font-bold text-blue-950 text-center change-password-button-text">
+            Change Password
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
