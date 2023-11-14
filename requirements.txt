@@ -36,4 +36,11 @@ typing_extensions==4.7.1
 urllib3==2.0.7
 wheel==0.37.0
 
-# npm install @react-navigation/drawer
+# npm install @react-navigation/drawer para menu lateral
+# pip install Pillow para relacionado a multimedia
+# pip install moviepy
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    # echo 'eval $(/opt/homebrew/bin/brew shellenv)' >> ~/.zshrc
+    # eval $(/opt/homebrew/bin/brew shellenv)
+# brew install ffmpeg
+# pip install django-ffmpeg

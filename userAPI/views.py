@@ -1,7 +1,7 @@
 # userAPI/views.py
 
 from django.contrib.auth import get_user_model
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, viewsets
 from .serializers import UserSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework import status
@@ -10,6 +10,9 @@ from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password
+from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta
+from .serializers import CursoSerializer, ModuloSerializer, CuestionarioSerializer, PreguntaSerializer, RespuestaSerializer
+
 
 User = get_user_model()
 
@@ -68,3 +71,36 @@ def change_password(request):
     user.set_password(new_password)
     user.save()
     return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
+
+class CursoViewSet(viewsets.ModelViewSet):
+    queryset = Curso.objects.all()
+    serializer_class = CursoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Retorna los cursos solo para el usuario autenticado
+        return self.queryset.filter(usuario=self.request.user)
+
+class ModuloViewSet(viewsets.ModelViewSet):
+    queryset = Modulo.objects.all()
+    serializer_class = ModuloSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Filtra los módulos según el curso y la autenticación del usuario
+        return self.queryset.filter(curso__usuario=self.request.user)
+
+class CuestionarioViewSet(viewsets.ModelViewSet):
+    queryset = Cuestionario.objects.all()
+    serializer_class = CuestionarioSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class PreguntaViewSet(viewsets.ModelViewSet):
+    queryset = Pregunta.objects.all()
+    serializer_class = PreguntaSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class RespuestaViewSet(viewsets.ModelViewSet):
+    queryset = Respuesta.objects.all()
+    serializer_class = RespuestaSerializer
+    permission_classes = [permissions.IsAuthenticated]
