@@ -1,0 +1,10 @@
+.drawer-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .drawer-spacer {
+    flex-grow: 1;
+  }
+  

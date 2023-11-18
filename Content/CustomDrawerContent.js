@@ -1,9 +1,9 @@
-// CustomDrawerContent.js
 import React, { useState, useEffect } from 'react';
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
+import { View, Text, Alert, StyleSheet, SafeAreaView } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import axios from 'axios'; // Asegúrate de importar axios
-import { Alert } from 'react-native';
+import axios from 'axios';
+
 
 const CustomDrawerContent = (props) => {
   const [userName, setUserName] = useState('');
@@ -47,13 +47,38 @@ const CustomDrawerContent = (props) => {
     ]);
   }
   return (
-    <DrawerContentScrollView {...props}>
-      {/* Mostrar el nombre del usuario si está disponible */}
-      {userName && <DrawerItem label={`Welcome, ${userName}`} />}
-      <DrawerItemList {...props} />
-      <DrawerItem label="Logout" onPress={handleLogout} />
-    </DrawerContentScrollView>
+    <View style={{ flex: 1 }}>
+      <DrawerContentScrollView {...props} style={{ marginTop: 0 }}>
+        {/* Saludo en la parte superior del drawer */}
+        {userName && (
+          <Text style={styles.userGreeting}>{`Welcome, ${userName}`}</Text>
+        )}
+
+        {/* Lista de elementos del drawer */}
+        <DrawerItemList {...props} />
+      </DrawerContentScrollView>
+
+      {/* Sección del logout en la parte inferior */}
+      <DrawerItem label="Logout" onPress={handleLogout} style={styles.logoutItem} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  userGreeting: {
+    padding: 16,
+    fontSize: 16,
+    // Asegúrate de que no haya margen superior para el saludo.
+    marginTop: 0,
+  },
+  logoutItem: {
+    
+    // Coloca el botón "Logout" justo debajo del scrollview
+    
+    bottom: 30,
+    width: '100%',
+  },
+  // ... más estilos si es necesario ...
+});
 
 export default CustomDrawerContent;

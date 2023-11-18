@@ -7,7 +7,12 @@ import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
 import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
-import { AuthProvider } from './AuthContext'; // Asegúrate de que esta es la ruta correcta al archivo AuthContext.js
+import { AuthProvider } from './AuthContext';
+import CursoActivoScreen from "./screens/CursoActivoScreen"
+import CursoComplScreen from "./screens/CursoComplScreen"
+import CursoNoIniScreen from "./screens/CursoNoIniScreen"
+
+
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -31,6 +36,9 @@ const DrawerNavigation = () => {
     <Drawer.Navigator drawerContent={(props) => <CustomDrawerContent {...props} />} initialRouteName="Home">
       <Drawer.Screen name="Home" component={HomeScreen} />
       <Drawer.Screen name="Settings" component={SettingsScreen} />
+      <Drawer.Screen name="CursoActivo" component={CursoActivoScreen} options={{ drawerItemStyle: { height: 0 } }} />
+      <Drawer.Screen name="CursoCompletado" component={CursoComplScreen} options={{ drawerItemStyle: { height: 0 } }} />
+      <Drawer.Screen name="CursoNoIniciado" component={CursoNoIniScreen} options={{ drawerItemStyle: { height: 0 } }} />
       {/* ... otras pantallas ... */}
     </Drawer.Navigator>
   );
