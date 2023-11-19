@@ -24,7 +24,6 @@ SECRET_KEY = 'django-insecure-6jm^b*um8ewa(l3kdjtx&&h+mcqhndjs@hvfmvax$&xi(b6^cg
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = ['192.168.100.41', 'localhost', '127.0.0.1']
 
 
@@ -138,5 +137,5 @@ REST_FRAMEWORK = {
 
 # settings.py
 
-MEDIA_URL = '/media/'
+MEDIA_URL = '/api/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

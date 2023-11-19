@@ -22,4 +22,4 @@ urlpatterns = [
     path('user/', get_user_info, name='get_user_info'),
     path('change-password/', change_password, name='change_password'),
     path('', include(router.urls)),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static('/api' + settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
