@@ -1,73 +1,69 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import axios from 'axios'; // Asegúrate de que axios está instalado
+import axios from 'axios';
+import * as SecureStore from 'expo-secure-store'; // Asegúrate de importar SecureStore
 
 const CursoNoIniScreen = () => {
     const [cursos, setCursos] = useState([]);
     const navigation = useNavigation();
 
     useEffect(() => {
-        axios.get('URL_API_BACKEND/cursos_no_iniciados') // Actualiza con la URL de tu API
-            .then(response => {
-                // Suponiendo que la respuesta es un array de cursos
-                setCursos(response.data);
-            })
-            .catch(error => console.log(error));
+        const fetchCursosNoIniciados = async () => {
+            try {
+                const token = await SecureStore.getItemAsync('userToken');
+                if (token) {
+                    const response = await axios.get('http://localhost:8000/api/progreso_curso_no_iniciado/', {
+                        headers: {
+                            'Authorization': `Token ${token}`
+                        }
+                    });
+                    setCursos(response.data);
+                } else {
+                    Alert.alert('Error', 'No se encontró el token de autenticación.');
+                }
+            } catch (error) {
+                console.error('Error al obtener cursos no iniciados:', error);
+                Alert.alert('Error', 'No se pudo obtener los cursos no iniciados.');
+            }
+        };
+
+        fetchCursosNoIniciados();
     }, []);
 
     const iniciarCurso = (cursoId) => {
-        axios.post(`URL_API_BACKEND/iniciar_curso/${cursoId}`) // Actualiza con la URL de tu API
-            .then(() => {
-                navigation.navigate('CursoModulos', { cursoId });
-            })
-            .catch(error => console.log(error));
+        // Reemplazar 'URL_API_BACKEND' con la URL real de tu backend
+        axios.post(`http://localhost:8000/api/iniciar_curso/${cursoId}`, {}, {
+            headers: {
+                'Authorization': `Token ${token}` // Asegúrate de obtener el token como se hace en fetchCursosNoIniciados
+            }
+        })
+        .then(() => {
+            navigation.navigate('CursoModulos', { cursoId });
+        })
+        .catch(error => {
+            console.error('Error al iniciar curso:', error);
+            Alert.alert('Error', 'No se pudo iniciar el curso.');
+        });
     };
 
-    useEffect(() => {
-        navigation.setOptions({
-            headerShown: true,
-            headerLeft: () => (
-                <TouchableOpacity
-                    style={styles.headerButton}
-                    onPress={() => navigation.goBack()}>
-                    <Ionicons
-                        name="arrow-back"
-                        size={24}
-                        color="black"
-                    />
-                </TouchableOpacity>
-            ),
-            headerRight: () => (
-                <TouchableOpacity
-                    style={styles.headerButton}
-                    onPress={() => navigation.toggleDrawer()}>
-                    <Ionicons
-                        name="md-menu"
-                        size={24}
-                        color="black"
-                    />
-                </TouchableOpacity>
-            ),
-            title: 'Cursos No Iniciados',
-        });
-    }, [navigation]);
+    // Aquí puedes manejar la lógica del header si es necesario
+    // ...
 
     return (
-        <View>
-            <Text>Cursos No Iniciados</Text>
+        <View style={styles.container}>
             <FlatList
                 data={cursos}
                 renderItem={({ item }) => (
                     <View style={styles.cursoItem}>
-                        <Text style={styles.cursoTitle}>{item.nombre}</Text>
-                        <Text>{item.descripcion}</Text>
-                        <Image source={{ uri: item.imagen }} style={styles.cursoImage} />
+                        <Text style={styles.cursoTitle}>{item.curso.nombre}</Text>
+                        <Text>{item.curso.descripcion}</Text>
+                        <Image source={{ uri: item.curso.imagen }} style={styles.cursoImage} />
                         <TouchableOpacity
                             style={styles.iniciarButton}
                             onPress={() => iniciarCurso(item.id)}>
-                            <Text>Iniciar Curso</Text>
+                            <Text style={styles.iniciarButtonText}>Iniciar Curso</Text>
                         </TouchableOpacity>
                     </View>
                 )}
@@ -78,6 +74,10 @@ const CursoNoIniScreen = () => {
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 10,
+    },
     headerButton: {
         paddingHorizontal: 10,
     },
@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
+        marginBottom: 10,
     },
     cursoTitle: {
         fontSize: 18,
@@ -101,6 +102,10 @@ const styles = StyleSheet.create({
         padding: 10,
         alignItems: 'center',
         borderRadius: 5,
+    },
+    iniciarButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
     },
     // ... más estilos si es necesario ...
 });
