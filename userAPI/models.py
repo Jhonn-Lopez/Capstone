@@ -7,13 +7,6 @@ from django.core.files.storage import default_storage as storage
 import subprocess
 import shlex
 
-
-class APIImageField(models.ImageField):
-    @property
-    def url(self):
-        original_url = super().url
-        return '/api' + original_url
-
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -55,7 +48,7 @@ User = get_user_model()
 class Curso(models.Model):
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField()
-    imagen = APIImageField(upload_to='cursos/imagenes/', blank=True, null=True)
+    imagen = models.ImageField(upload_to='cursos/imagenes/', blank=True, null=True)
     activo = models.BooleanField(default=False)
 
     def __str__(self):
@@ -96,7 +89,7 @@ class Contenido(models.Model):
     descripcion = models.TextField(blank=True, null=True)
     video = models.FileField(upload_to='contenidos/videos/', blank=True, null=True)
     duracion_video = models.DurationField(blank=True, null=True)  # Guarda la duración del video
-    imagen = APIImageField(upload_to='contenidos/imagenes/', blank=True, null=True)
+    imagen = models.ImageField(upload_to='contenidos/imagenes/', blank=True, null=True)
     archivo = models.FileField(upload_to='contenidos/archivos/', blank=True, null=True)
     activo = models.BooleanField(default=True)
 

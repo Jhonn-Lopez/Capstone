@@ -7,6 +7,7 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 router = DefaultRouter()
 router.register(r'cursos', views.CursoViewSet)
 router.register(r'modulos', views.ModuloViewSet)
@@ -22,4 +23,4 @@ urlpatterns = [
     path('user/', get_user_info, name='get_user_info'),
     path('change-password/', change_password, name='change_password'),
     path('', include(router.urls)),
-] + static('/api' + settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

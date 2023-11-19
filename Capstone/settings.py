@@ -137,5 +137,5 @@ REST_FRAMEWORK = {
 
 # settings.py
 
-MEDIA_URL = '/api/media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
