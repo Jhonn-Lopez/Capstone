@@ -4,6 +4,8 @@ from django.urls import path, include
 from .views import CreateUserView, LoginView, get_user_info, change_password
 from rest_framework.routers import DefaultRouter
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 router = DefaultRouter()
 router.register(r'cursos', views.CursoViewSet)
@@ -20,4 +22,4 @@ urlpatterns = [
     path('user/', get_user_info, name='get_user_info'),
     path('change-password/', change_password, name='change_password'),
     path('', include(router.urls)),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

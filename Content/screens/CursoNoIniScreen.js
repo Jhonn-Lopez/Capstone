@@ -14,7 +14,7 @@ const CursoNoIniScreen = () => {
             try {
                 const token = await SecureStore.getItemAsync('userToken');
                 if (token) {
-                    const response = await axios.get('http://localhost:8000/api/progreso_curso_no_iniciado/', {
+                    const response = await axios.get('http://192.168.100.41:8000/api/progreso_curso_no_iniciado/', {
                         headers: {
                             'Authorization': `Token ${token}`
                         }
