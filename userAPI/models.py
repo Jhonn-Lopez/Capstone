@@ -49,8 +49,7 @@ class Curso(models.Model):
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField()
     imagen = models.ImageField(upload_to='cursos/imagenes/', blank=True, null=True)
-    video = models.FileField(upload_to='cursos/videos/', blank=True, null=True)
-    activo = models.BooleanField(default=True)
+    activo = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nombre
@@ -78,6 +77,7 @@ class Modulo(models.Model):
     curso = models.ForeignKey(Curso, related_name='modulos', on_delete=models.CASCADE)  
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
+    activo = models.BooleanField(default=False)
     # Otros campos que necesites para el módulo
 
     def __str__(self):

@@ -1,17 +1,17 @@
-# userAPI/views.py
-
 from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, viewsets
 from .serializers import UserSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework import status
+from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password
-from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta
-from .serializers import CursoSerializer, ModuloSerializer, CuestionarioSerializer, PreguntaSerializer, RespuestaSerializer
+from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso, CustomUser
+from .serializers import UserSerializer, CursoSerializer, ModuloSerializer, CuestionarioSerializer, PreguntaSerializer, RespuestaSerializer, ProgresoCursoSerializer
 
 
 User = get_user_model()
@@ -24,7 +24,7 @@ class ListCreateUsers(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 # Esta vista permite la creación de nuevos usuarios
-class CreateUserView(generics.CreateAPIView):
+
     model = User
     permission_classes = [
         permissions.AllowAny  # Permitir que cualquier usuario pueda registrarse
@@ -72,6 +72,18 @@ def change_password(request):
     user.save()
     return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
 
+class ProgresoCursoViewSet(viewsets.ModelViewSet):
+    queryset = ProgresoCurso.objects.all()
+    serializer_class = ProgresoCursoSerializer
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=True, methods=['post'])
+    def iniciar_curso(self, request, pk=None):
+        progreso = self.get_object()
+        progreso.estado = 'activo'
+        progreso.save()
+        return Response({'status': 'curso activado'})
+
 class CursoViewSet(viewsets.ModelViewSet):
     queryset = Curso.objects.all()
     serializer_class = CursoSerializer
@@ -104,3 +116,16 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+class ProgresoCursoNoIniciadoViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ProgresoCurso.objects.filter(estado='no_iniciado')
+    serializer_class = ProgresoCursoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Asegúrate de que esta lógica es correcta y de que devuelve lo que esperas
+        return self.queryset.filter(usuario=self.request.user)  
+    
+class CreateUserView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer    

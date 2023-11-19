@@ -2,7 +2,7 @@
 
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta
+from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso
 
 User = get_user_model()
 
@@ -53,4 +53,11 @@ class CursoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Curso
-        fields = ['id', 'nombre', 'descripcion', 'imagen', 'video', 'activo', 'modulos']
+        fields = ['id', 'nombre', 'descripcion', 'imagen', 'activo', 'modulos']
+
+class ProgresoCursoSerializer(serializers.ModelSerializer):
+    curso = CursoSerializer(read_only=True)  # Incluir detalles del curso
+
+    class Meta:
+        model = ProgresoCurso
+        fields = ('id', 'usuario', 'curso', 'estado', 'fecha_inicio', 'ultima_actividad')        

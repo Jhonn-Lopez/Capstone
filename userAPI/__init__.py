@@ -1,0 +1,1 @@
+default_app_config = 'userAPI.apps.UserAPIConfig'

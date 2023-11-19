@@ -65,15 +65,4 @@ class ProgresoCursoAdmin(admin.ModelAdmin):
     list_filter = ('estado', 'curso')
     search_fields = ('usuario__email', 'curso__nombre')
 
-@admin.register(Contenido)
-class ContenidoAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'modulo', 'activo', 'get_duracion_video')
-    list_filter = ('activo', 'modulo')
-    search_fields = ('titulo', 'descripcion')
-    fields = ('modulo', 'titulo', 'descripcion', 'video', 'imagen', 'archivo', 'activo')
-
-    def get_duracion_video(self, obj):
-        return obj.duracion_video if obj.duracion_video else 'No especificado'
-    get_duracion_video.short_description = 'Duración del Video'
-
 # Si tienes un ModelAdmin o inlines adicionales, asegúrate de registrarlos también.

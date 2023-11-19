@@ -1,5 +1,5 @@
 # userAPI/urls.py
-
+from .views import CreateUserView
 from django.urls import path, include
 from .views import CreateUserView, LoginView, get_user_info, change_password
 from rest_framework.routers import DefaultRouter
@@ -11,6 +11,8 @@ router.register(r'modulos', views.ModuloViewSet)
 router.register(r'cuestionarios', views.CuestionarioViewSet)
 router.register(r'preguntas', views.PreguntaViewSet)
 router.register(r'respuestas', views.RespuestaViewSet)
+router.register(r'progreso_curso', views.ProgresoCursoViewSet)
+router.register(r'progreso_curso_no_iniciado', views.ProgresoCursoNoIniciadoViewSet)
 
 urlpatterns = [
     path('register/', CreateUserView.as_view(), name='register'),
