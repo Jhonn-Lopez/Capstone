@@ -11,6 +11,7 @@ import { AuthProvider } from './AuthContext';
 import CursoActivoScreen from "./screens/CursoActivoScreen"
 import CursoComplScreen from "./screens/CursoComplScreen"
 import CursoNoIniScreen from "./screens/CursoNoIniScreen"
+import CursoModulos from "./screens/CursoModulosScreen"
 
 
 
@@ -39,6 +40,7 @@ const DrawerNavigation = () => {
       <Drawer.Screen name="CursoActivo" component={CursoActivoScreen} options={{ drawerItemStyle: { height: 0 } }} />
       <Drawer.Screen name="CursoCompletado" component={CursoComplScreen} options={{ drawerItemStyle: { height: 0 } }} />
       <Drawer.Screen name="CursoNoIniciado" component={CursoNoIniScreen} options={{ drawerItemStyle: { height: 0 } }} />
+      <Drawer.Screen name="CursoModulos" component={CursoModulos} options={{ drawerItemStyle: { height: 0 } }} />
       {/* ... otras pantallas ... */}
     </Drawer.Navigator>
   );

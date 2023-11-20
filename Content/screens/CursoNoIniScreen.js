@@ -34,18 +34,30 @@ const CursoNoIniScreen = () => {
         const token = await SecureStore.getItemAsync('userToken');
         if (token) {
             try {
-                await axios.post(`http://localhost:8000/api/iniciar_curso/${cursoId}`, {}, {
+                const response = await axios.post(`http://localhost:8000/api/progreso_curso/${cursoId}/iniciar_curso/`, {}, 
+                {
                     headers: {
                         'Authorization': `Token ${token}`
                     }
                 });
+    
+                setCursos(cursos.map(curso => 
+                    curso.id === cursoId 
+                    ? { ...curso, estado: 'activo' } 
+                    : curso
+                ));
+    
                 navigation.navigate('CursoModulos', { cursoId });
+    
             } catch (error) {
                 console.error('Error al iniciar curso:', error);
                 Alert.alert('Error', 'No se pudo iniciar el curso.');
             }
+        } else {
+            Alert.alert('Error', 'Token de autenticación no encontrado.');
         }
     };
+    
 
     useEffect(() => {
         navigation.setOptions({

@@ -126,6 +126,19 @@ class ProgresoCursoNoIniciadoViewSet(viewsets.ReadOnlyModelViewSet):
         # Asegúrate de que esta lógica es correcta y de que devuelve lo que esperas
         return self.queryset.filter(usuario=self.request.user)  
     
+    @action(detail=True, methods=['post'])
+    def iniciar_curso(self, request, pk=None):
+        try:
+            progreso = ProgresoCurso.objects.get(curso_id=pk, usuario=request.user)
+            progreso.estado = 'activo'
+            progreso.save()
+            serializer = ProgresoCursoSerializer(progreso)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except ProgresoCurso.DoesNotExist:
+            return Response({'message': 'ProgresoCurso no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+    
 class CreateUserView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer    
