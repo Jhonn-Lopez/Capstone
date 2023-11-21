@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password
 from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso, CustomUser
 from .serializers import UserSerializer, CursoSerializer, ModuloSerializer, CuestionarioSerializer, PreguntaSerializer, RespuestaSerializer, ProgresoCursoSerializer
-
+from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
@@ -116,6 +116,11 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
     permission_classes = [permissions.IsAuthenticated]
+    
+class CreateUserView(generics.CreateAPIView):
+    queryset = ProgresoCurso.objects.filter(estado='no_iniciado')
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer    
 
 class ProgresoCursoNoIniciadoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ProgresoCurso.objects.filter(estado='no_iniciado')
@@ -137,8 +142,41 @@ class ProgresoCursoNoIniciadoViewSet(viewsets.ReadOnlyModelViewSet):
         except ProgresoCurso.DoesNotExist:
             return Response({'message': 'ProgresoCurso no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
+class ProgresoCursoCompletadoViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ProgresoCurso.objects.filter(estado='completado')
+    serializer_class = ProgresoCursoSerializer
+    permission_classes = [IsAuthenticated]
 
-    
-class CreateUserView(generics.CreateAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer    
+    def get_queryset(self):
+        # Asegúrate de que esta lógica es correcta y de que devuelve lo que esperas
+        return self.queryset.filter(usuario=self.request.user)    
+
+class ProgresoCursoActivoViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ProgresoCurso.objects.filter(estado='activo')
+    serializer_class = ProgresoCursoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Asegúrate de que esta lógica es correcta y de que devuelve lo que esperas
+        return self.queryset.filter(usuario=self.request.user)  
+
+class CursoModulosViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ModuloSerializer
+    queryset = Modulo.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Este método sobrescrito asegura que solo se devuelvan los módulos
+        para el curso especificado en la URL.
+        """
+        curso_id = self.kwargs.get('curso_pk')
+        return self.queryset.filter(curso_id=curso_id)
+
+class ModuloViewSet(viewsets.ModelViewSet):
+    serializer_class = ModuloSerializer
+
+    def get_queryset(self):
+        # Filtra los módulos por el ID del curso proporcionado en la URL
+        curso_id = self.kwargs.get('curso_pk')
+        return Modulo.objects.filter(curso_id=curso_id)

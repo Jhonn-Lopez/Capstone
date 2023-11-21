@@ -71,7 +71,7 @@ class ProgresoCurso(models.Model):
         unique_together = ('usuario', 'curso')
 
     def __str__(self):
-        return f"{self.usuario.username}'s progress on {self.curso.nombre}"
+        return f"{self.usuario.email}'s progress on {self.curso.nombre}"
 
 class Modulo(models.Model):
     curso = models.ForeignKey(Curso, related_name='modulos', on_delete=models.CASCADE)  

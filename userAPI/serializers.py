@@ -1,5 +1,3 @@
-# userAPI/serializers.py
-
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso
@@ -46,7 +44,7 @@ class ModuloSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Modulo
-        fields = ['id', 'curso', 'titulo', 'descripcion', 'video', 'duracion_video', 'imagen', 'archivo', 'activo', 'cuestionario']
+        fields = ['id', 'curso', 'nombre', 'descripcion', 'activo', 'cuestionario']
 
 class CursoSerializer(serializers.ModelSerializer):
     modulos = ModuloSerializer(many=True, read_only=True)
@@ -60,4 +58,4 @@ class ProgresoCursoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProgresoCurso
-        fields = ('id', 'usuario', 'curso', 'estado', 'fecha_inicio', 'ultima_actividad')        
+        fields = ('id', 'usuario', 'curso', 'estado', 'fecha_inicio', 'ultima_actividad')

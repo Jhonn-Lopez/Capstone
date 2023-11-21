@@ -110,9 +110,9 @@ const CursoNoIniScreen = () => {
                             <Image source={{ uri: imageUrl }} style={styles.cursoImage} />
                             </View>                        
                             <TouchableOpacity
-                                style={styles.iniciarButton}
+                                className="w-full bg-yellow-500 p-3 rounded-2xl mb-3"
                                 onPress={() => iniciarCurso(item.id)}>
-                                <Text style={styles.iniciarButtonText}>Iniciar Curso</Text>
+                                <Text className="text-xl font-bold text-blue-950 text-center">Iniciar Curso</Text>
                             </TouchableOpacity>
                         </View>
                     );
@@ -136,7 +136,8 @@ const styles = StyleSheet.create({
     cursoTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        textAlign: 'center'
+        textAlign: 'center',
+        paddingBottom: 10 
     },
     cursoDescription: {
         fontSize: 12,
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     cursoImageContainer: {
         width: '100%', // Asume el ancho completo del contenedor
         height: 180, // Altura fija para el contenedor de la imagen
-                justifyContent: 'center', // Centra la imagen verticalmente
+        justifyContent: 'center', // Centra la imagen verticalmente
         alignItems: 'center', // Centra la imagen horizontalmente
         marginVertical: 10, // Espaciado vertical para separar el contenedor de imagen de otros elementos
     },

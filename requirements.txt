@@ -43,3 +43,14 @@ wheel==0.37.0
     # eval $(/opt/homebrew/bin/brew shellenv)
 # brew install ffmpeg
 # pip install django-ffmpeg
+# npm install react-native-collapsible --save
+# pip install drf-nested-routers
+
+
+
+
+
+# Añadir "back" en Settings
+# Validacion de minimo 8 caracteres en settings
+# Añadir validacion en cursos sin iniciar si no hay cursos disponibles
+# Añadir funcion de recuperar contraseña

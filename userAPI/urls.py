@@ -1,21 +1,30 @@
 # userAPI/urls.py
-from .views import CreateUserView
 from django.urls import path, include
-from .views import CreateUserView, LoginView, get_user_info, change_password
+from .views import (
+    CreateUserView, LoginView, get_user_info, change_password, 
+    CursoViewSet, CursoModulosViewSet, ModuloViewSet, CuestionarioViewSet, 
+    PreguntaViewSet, RespuestaViewSet, ProgresoCursoViewSet, 
+    ProgresoCursoNoIniciadoViewSet, ProgresoCursoActivoViewSet, 
+    ProgresoCursoCompletadoViewSet
+)
 from rest_framework.routers import DefaultRouter
-from . import views
+from rest_framework_nested import routers
 from django.conf import settings
 from django.conf.urls.static import static
 
-
 router = DefaultRouter()
-router.register(r'cursos', views.CursoViewSet)
-router.register(r'modulos', views.ModuloViewSet)
-router.register(r'cuestionarios', views.CuestionarioViewSet)
-router.register(r'preguntas', views.PreguntaViewSet)
-router.register(r'respuestas', views.RespuestaViewSet)
-router.register(r'progreso_curso', views.ProgresoCursoViewSet)
-router.register(r'progreso_curso_no_iniciado', views.ProgresoCursoNoIniciadoViewSet)
+router.register(r'cursos', CursoViewSet)
+router.register(r'cuestionarios', CuestionarioViewSet)
+router.register(r'preguntas', PreguntaViewSet)
+router.register(r'respuestas', RespuestaViewSet)
+router.register(r'progreso_curso', ProgresoCursoViewSet)
+router.register(r'progreso_curso_no_iniciado', ProgresoCursoNoIniciadoViewSet)
+router.register(r'progreso_curso_activo', ProgresoCursoActivoViewSet)
+router.register(r'progreso_curso_completado', ProgresoCursoCompletadoViewSet)
+
+# Crear un router anidado para los módulos
+modulos_router = routers.NestedSimpleRouter(router, r'cursos', lookup='curso')
+modulos_router.register(r'modulos', CursoModulosViewSet, basename='curso-modulos')
 
 urlpatterns = [
     path('register/', CreateUserView.as_view(), name='register'),
@@ -23,4 +32,5 @@ urlpatterns = [
     path('user/', get_user_info, name='get_user_info'),
     path('change-password/', change_password, name='change_password'),
     path('', include(router.urls)),
+    path('', include(modulos_router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
