@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso, Contenido
+from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso, Contenido, ProgresoModulo
 
 # Clase Inline para Respuesta, que se muestra dentro de la interfaz de Pregunta
 class RespuestaInline(admin.TabularInline):
@@ -65,4 +65,15 @@ class ProgresoCursoAdmin(admin.ModelAdmin):
     list_filter = ('estado', 'curso')
     search_fields = ('usuario__email', 'curso__nombre')
 
-# Si tienes un ModelAdmin o inlines adicionales, asegúrate de registrarlos también.
+@admin.register(Contenido)
+class ContenidoAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'modulo', 'activo')
+    list_filter = ('activo', 'modulo')
+    search_fields = ('titulo', 'modulo__nombre')
+
+# Clase ModelAdmin para ProgresoModulo
+@admin.register(ProgresoModulo)
+class ProgresoModuloAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'modulo', 'estado', 'fecha_inicio', 'ultima_actividad')
+    list_filter = ('estado', 'modulo')
+    search_fields = ('usuario__email', 'modulo__nombre')

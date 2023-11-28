@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password
 from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso, CustomUser
 from .serializers import UserSerializer, CursoSerializer, ModuloSerializer, CuestionarioSerializer, PreguntaSerializer, RespuestaSerializer, ProgresoCursoSerializer
-from django.shortcuts import get_object_or_404
+from django.db.models import F
 
 User = get_user_model()
 
@@ -135,10 +135,27 @@ class ProgresoCursoNoIniciadoViewSet(viewsets.ReadOnlyModelViewSet):
     def iniciar_curso(self, request, pk=None):
         try:
             progreso = ProgresoCurso.objects.get(curso_id=pk, usuario=request.user)
-            progreso.estado = 'activo'
-            progreso.save()
-            serializer = ProgresoCursoSerializer(progreso)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            
+            # Si el curso está pasando de 'no_iniciado' a 'activo', manejar el progreso del módulo
+            if progreso.estado == 'no_iniciado':
+                progreso.estado = 'activo'
+                progreso.save()
+                
+                # Buscar y actualizar el progreso del primer módulo
+                primer_modulo = Modulo.objects.filter(curso_id=pk).order_by('orden').first()
+                if primer_modulo:
+                    ProgresoModulo.objects.create(
+                        usuario=request.user,
+                        modulo=primer_modulo,
+                        estado='en_progreso'
+                    )
+
+                serializer = ProgresoCursoSerializer(progreso)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                # Manejar situaciones donde el curso no está en estado 'no_iniciado'
+                return Response({'message': 'El curso ya está activo o completado.'}, status=status.HTTP_400_BAD_REQUEST)
+                
         except ProgresoCurso.DoesNotExist:
             return Response({'message': 'ProgresoCurso no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 

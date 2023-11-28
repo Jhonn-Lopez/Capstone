@@ -78,10 +78,33 @@ class Modulo(models.Model):
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
     activo = models.BooleanField(default=False)
+    orden = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['orden']
     # Otros campos que necesites para el módulo
 
     def __str__(self):
         return self.nombre
+
+class ProgresoModulo(models.Model):
+    ESTADOS_MODULO = (
+        ('no_iniciado', 'No Iniciado'),
+        ('en_progreso', 'En Progreso'),
+        ('completado', 'Completado'),
+    )
+
+    usuario = models.ForeignKey(User, related_name='progreso_modulos', on_delete=models.CASCADE)
+    modulo = models.ForeignKey(Modulo, related_name='progreso_usuarios', on_delete=models.CASCADE)
+    estado = models.CharField(max_length=12, choices=ESTADOS_MODULO, default='no_iniciado')
+    fecha_inicio = models.DateTimeField(auto_now_add=True)
+    ultima_actividad = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('usuario', 'modulo')
+
+    def __str__(self):
+        return f"{self.usuario.email}'s progress on module {self.modulo.nombre}"
 
 class Contenido(models.Model):
     modulo = models.ForeignKey(Modulo, related_name='contenidos', on_delete=models.CASCADE)
