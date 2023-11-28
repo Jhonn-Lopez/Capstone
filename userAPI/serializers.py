@@ -21,41 +21,48 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class RespuestaSerializer(serializers.ModelSerializer):
+    id_respuesta = serializers.IntegerField(source='id')  # Cambia el nombre del campo 'id' a 'id_respuesta'
+
     class Meta:
         model = Respuesta
-        fields = ['id', 'texto', 'correcta']
+        fields = ['id_respuesta', 'texto', 'correcta']
 
 class PreguntaSerializer(serializers.ModelSerializer):
     respuestas = RespuestaSerializer(many=True, read_only=True)
 
     class Meta:
         model = Pregunta
-        fields = ['id', 'texto', 'respuestas']
+        fields = ['texto', 'respuestas']
+
 
 class CuestionarioSerializer(serializers.ModelSerializer):
     preguntas = PreguntaSerializer(many=True, read_only=True)
 
     class Meta:
         model = Cuestionario
-        fields = ['id', 'modulo', 'activo', 'preguntas']
+        fields = ['modulo', 'activo', 'preguntas']
+
 
 class ModuloSerializer(serializers.ModelSerializer):
     cuestionario = CuestionarioSerializer(read_only=True)
+    id_modulo = serializers.IntegerField(source='id')  # Cambia el nombre del campo 'id' a 'id_modulo'
 
     class Meta:
         model = Modulo
-        fields = ['id', 'curso', 'nombre', 'descripcion', 'activo', 'cuestionario']
+        fields = ['id_modulo', 'curso', 'nombre', 'descripcion', 'activo', 'cuestionario']
 
 class CursoSerializer(serializers.ModelSerializer):
     modulos = ModuloSerializer(many=True, read_only=True)
+    id_curso = serializers.IntegerField(source='id')  # Cambia el nombre del campo 'id' a 'id_curso'
 
     class Meta:
         model = Curso
-        fields = ['id', 'nombre', 'descripcion', 'imagen', 'activo', 'modulos']
+        fields = ['id_curso', 'nombre', 'descripcion', 'imagen', 'activo', 'modulos']
 
 class ProgresoCursoSerializer(serializers.ModelSerializer):
-    curso = CursoSerializer(read_only=True)  # Incluir detalles del curso
+    curso = CursoSerializer(read_only=True)
+    id_progresoCurso = serializers.IntegerField(source='id')  # Cambia el nombre del campo 'id' a 'id_progresoCurso'
 
     class Meta:
         model = ProgresoCurso
-        fields = ('id', 'usuario', 'curso', 'estado', 'fecha_inicio', 'ultima_actividad')
+        fields = ('id_progresoCurso', 'usuario', 'curso', 'estado', 'fecha_inicio', 'ultima_actividad')

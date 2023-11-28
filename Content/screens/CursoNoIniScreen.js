@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, Alert } from
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
-import * as SecureStore from 'expo-secure-store'; // Importa SecureStore
+import * as SecureStore from 'expo-secure-store';
 
 const CursoNoIniScreen = () => {
     const [cursos, setCursos] = useState([]);
@@ -20,6 +20,7 @@ const CursoNoIniScreen = () => {
                         }
                     });
                     setCursos(response.data);
+                    console.log("Cursos cargados:", response.data); // Añadido para depuración
                 } catch (error) {
                     console.error('Error al obtener cursos no iniciados:', error);
                     Alert.alert('Error', 'No se pudo obtener los cursos no iniciados.');
@@ -31,10 +32,19 @@ const CursoNoIniScreen = () => {
     }, []);
 
     const iniciarCurso = async (cursoId) => {
+        console.log("Intentando iniciar curso con ID:", cursoId); // Añadido para depuración
+
+        if (!cursoId) {
+            console.error('Curso ID no proporcionado');
+            Alert.alert('Error', 'Curso ID no proporcionado.');
+            return;
+        }
+
         const token = await SecureStore.getItemAsync('userToken');
         if (token) {
             try {
-                const response = await axios.post(`http://localhost:8000/api/progreso_curso/${cursoId}/iniciar_curso/`, {}, 
+                // Cambio de URL aquí
+                const response = await axios.post(`http://localhost:8000/api/progreso_curso_no_iniciado/${cursoId}/iniciar_curso/`, {}, 
                 {
                     headers: {
                         'Authorization': `Token ${token}`
@@ -93,6 +103,7 @@ const CursoNoIniScreen = () => {
             <FlatList
                 data={cursos}
                 renderItem={({ item }) => {
+                    console.log(item);
                     // Obtén la parte del path de la imagen sin la base URL
                     const imageRelativePath = item.curso.imagen.replace('http://localhost:8000/', '');
     
@@ -111,13 +122,14 @@ const CursoNoIniScreen = () => {
                             </View>                        
                             <TouchableOpacity
                                 className="w-full bg-yellow-500 p-3 rounded-2xl mb-3"
-                                onPress={() => iniciarCurso(item.id)}>
+                                onPress={() => iniciarCurso(item.id_progresoCurso)}>
                                 <Text className="text-xl font-bold text-blue-950 text-center">Iniciar Curso</Text>
+                                
                             </TouchableOpacity>
                         </View>
                     );
                 }}
-                keyExtractor={item => item.id.toString()}
+                keyExtractor={item => (item.id_progresoCurso ? item.id_progresoCurso.toString() : `unique-${Math.random()}`)}
             />
         </View>
     );

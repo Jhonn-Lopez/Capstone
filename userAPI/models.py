@@ -62,7 +62,7 @@ class ProgresoCurso(models.Model):
     )
 
     usuario = models.ForeignKey(User, related_name='progreso_cursos', on_delete=models.CASCADE)
-    curso = models.ForeignKey(Curso, related_name='progreso_usuarios', on_delete=models.CASCADE)
+    curso = models.ForeignKey(Curso, related_name='progreso_cursos', on_delete=models.CASCADE)  # Cambia el related_name
     estado = models.CharField(max_length=12, choices=ESTADOS, default='no_iniciado')
     fecha_inicio = models.DateTimeField(auto_now_add=True)
     ultima_actividad = models.DateTimeField(auto_now=True)
@@ -70,42 +70,40 @@ class ProgresoCurso(models.Model):
     class Meta:
         unique_together = ('usuario', 'curso')
 
-    def __str__(self):
-        return f"{self.usuario.email}'s progress on {self.curso.nombre}"
-
 class Modulo(models.Model):
-    curso = models.ForeignKey(Curso, related_name='modulos', on_delete=models.CASCADE)  
+    curso = models.ForeignKey(Curso, related_name='modulos', on_delete=models.CASCADE)
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
     activo = models.BooleanField(default=False)
-    orden = models.IntegerField(default=0)
+    orden = models.PositiveIntegerField(default=0)  # Campo nuevo para el orden
 
     class Meta:
-        ordering = ['orden']
-    # Otros campos que necesites para el módulo
+        ordering = ['curso', 'orden']  # Ordena por curso y luego por orden
+        unique_together = ('curso', 'orden')  # Evita que haya dos módulos con el mismo orden en un curso
 
     def __str__(self):
         return self.nombre
 
-class ProgresoModulo(models.Model):
-    ESTADOS_MODULO = (
+    def save(self, *args, **kwargs):
+        if not self.id:  # Si es un módulo nuevo
+            # Asigna el siguiente número de orden
+            ultimo_modulo = Modulo.objects.filter(curso=self.curso).order_by('orden').last()
+            self.orden = (ultimo_modulo.orden + 1) if ultimo_modulo else 1
+        super(Modulo, self).save(*args, **kwargs)
+
+class ProgresoUsuario(models.Model):
+    ESTADOS = (
         ('no_iniciado', 'No Iniciado'),
-        ('en_progreso', 'En Progreso'),
+        ('activo', 'Activo'),
         ('completado', 'Completado'),
     )
-
-    usuario = models.ForeignKey(User, related_name='progreso_modulos', on_delete=models.CASCADE)
-    modulo = models.ForeignKey(Modulo, related_name='progreso_usuarios', on_delete=models.CASCADE)
-    estado = models.CharField(max_length=12, choices=ESTADOS_MODULO, default='no_iniciado')
-    fecha_inicio = models.DateTimeField(auto_now_add=True)
-    ultima_actividad = models.DateTimeField(auto_now=True)
+    usuario = models.ForeignKey(User, related_name='progreso_usuarios', on_delete=models.CASCADE)
+    curso = models.ForeignKey(Curso, related_name='progreso_usuarios', on_delete=models.CASCADE)  # Cambia el related_name
+    modulo = models.ForeignKey(Modulo, on_delete=models.CASCADE)
+    estado = models.CharField(max_length=12, choices=ESTADOS, default='no_iniciado')
 
     class Meta:
-        unique_together = ('usuario', 'modulo')
-
-    def __str__(self):
-        return f"{self.usuario.email}'s progress on module {self.modulo.nombre}"
-
+        unique_together = ('usuario', 'curso', 'modulo')
 class Contenido(models.Model):
     modulo = models.ForeignKey(Modulo, related_name='contenidos', on_delete=models.CASCADE)
     titulo = models.CharField(max_length=200)

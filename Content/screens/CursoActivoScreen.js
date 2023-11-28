@@ -48,14 +48,14 @@ const CursoActivoScreen = () => {
                             </View>
                             <TouchableOpacity
                                 className="w-full bg-yellow-500 p-3 rounded-2xl mb-3"
-                                onPress={() => continuarCurso(item.curso.id)}>
+                                onPress={() => continuarCurso(item.curso.id_progresoCurso)}>
                                 <Text className="text-xl font-bold text-blue-950 text-center">Continuar Curso</Text>
                             </TouchableOpacity>
                         </View>
                     );
                 }}
-                keyExtractor={item => item.id.toString()}
-            />
+                keyExtractor={item => (item.id ? item.id.toString() : 'default_key')}
+                />
         </View>
     );
 };

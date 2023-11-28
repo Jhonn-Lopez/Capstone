@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso, Contenido, ProgresoModulo
+from django import forms
+from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso, Contenido, ProgresoUsuario
 
 # Clase Inline para Respuesta, que se muestra dentro de la interfaz de Pregunta
 class RespuestaInline(admin.TabularInline):
@@ -65,15 +66,21 @@ class ProgresoCursoAdmin(admin.ModelAdmin):
     list_filter = ('estado', 'curso')
     search_fields = ('usuario__email', 'curso__nombre')
 
+@admin.register(ProgresoUsuario)
+class ProgresoUsuarioAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'curso', 'modulo', 'estado')
+    list_filter = ('estado', 'curso', 'modulo')
+    search_fields = ('usuario__email', 'curso__nombre', 'modulo__nombre')
+# Clase ModelForm personalizado para Contenido
+class ContenidoAdminForm(forms.ModelForm):
+    class Meta:
+        model = Contenido
+        fields = '__all__'  # Incluye todos los campos del modelo Contenido en el formulario
+
+# Clase ModelAdmin para Contenido
 @admin.register(Contenido)
 class ContenidoAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'modulo', 'activo')
-    list_filter = ('activo', 'modulo')
+    list_filter = ('activo',)
     search_fields = ('titulo', 'modulo__nombre')
-
-# Clase ModelAdmin para ProgresoModulo
-@admin.register(ProgresoModulo)
-class ProgresoModuloAdmin(admin.ModelAdmin):
-    list_display = ('usuario', 'modulo', 'estado', 'fecha_inicio', 'ultima_actividad')
-    list_filter = ('estado', 'modulo')
-    search_fields = ('usuario__email', 'modulo__nombre')
+    form = ContenidoAdminForm  # Usa el formulario personalizado
