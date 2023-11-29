@@ -5,7 +5,7 @@ from .views import (
     CursoViewSet, CursoModulosViewSet, ModuloViewSet, CuestionarioViewSet, 
     PreguntaViewSet, RespuestaViewSet, ProgresoCursoViewSet, 
     ProgresoCursoNoIniciadoViewSet, ProgresoCursoActivoViewSet, 
-    ProgresoCursoCompletadoViewSet
+    ProgresoCursoCompletadoViewSet, CursoProgresoViewSet
 )
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested import routers
@@ -21,6 +21,7 @@ router.register(r'progreso_curso', ProgresoCursoViewSet)
 router.register(r'progreso_curso_no_iniciado', ProgresoCursoNoIniciadoViewSet)
 router.register(r'progreso_curso_activo', ProgresoCursoActivoViewSet)
 router.register(r'progreso_curso_completado', ProgresoCursoCompletadoViewSet)
+router.register(r'cursos-progreso', CursoProgresoViewSet)
 
 # Crear un router anidado para los módulos
 modulos_router = routers.NestedSimpleRouter(router, r'cursos', lookup='curso')

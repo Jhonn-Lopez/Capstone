@@ -137,6 +137,7 @@ class Contenido(models.Model):
 
 class Cuestionario(models.Model):
     modulo = models.OneToOneField(Modulo, related_name='cuestionario', on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=1000)
     activo = models.BooleanField(default=False)
 
 class Pregunta(models.Model):

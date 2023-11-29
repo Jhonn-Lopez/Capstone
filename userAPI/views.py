@@ -90,8 +90,8 @@ class CursoViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Retorna los cursos solo para el usuario autenticado
-        return self.queryset.filter(usuario=self.request.user)
+        # Retorna los cursos asociados al usuario autenticado a través del modelo ProgresoCurso
+        return Curso.objects.filter(progreso_cursos__usuario=self.request.user)
 
 class ModuloViewSet(viewsets.ModelViewSet):
     queryset = Modulo.objects.all()
@@ -188,3 +188,16 @@ class ModuloViewSet(viewsets.ModelViewSet):
         # Filtra los módulos por el ID del curso proporcionado en la URL
         curso_id = self.kwargs.get('curso_pk')
         return Modulo.objects.filter(curso_id=curso_id)
+
+class CursoProgresoViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CursoSerializer
+    queryset = Curso.objects.all()  # Definir un queryset genérico a nivel de clase
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Este método sobrescrito devuelve los cursos asociados con el progreso
+        del usuario autenticado.
+        """
+        user = self.request.user
+        return self.queryset.filter(progreso_cursos__usuario=user)
