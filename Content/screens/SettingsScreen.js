@@ -76,6 +76,13 @@ const SettingsScreen = () => {
   }, [navigation]);
 
   const handleChangePassword = async () => {
+    // Primero verifica la longitud de las contraseñas nuevas
+    if (newPassword.length < 8 || confirmNewPassword.length < 8) {
+      Alert.alert("Error", "La nueva contraseña debe tener al menos 8 caracteres.");
+      return;
+    }
+  
+    // Luego verifica si las contraseñas nuevas coinciden
     if (newPassword !== confirmNewPassword) {
       Alert.alert("Error", "Las contraseñas nuevas no coinciden.");
       return;
@@ -170,9 +177,9 @@ const SettingsScreen = () => {
 
 const styles = StyleSheet.create({
   headerButton: {
-      paddingHorizontal: 10,
+    paddingHorizontal: 10,
   },
 });
 
- 
+
 export default SettingsScreen;

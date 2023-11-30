@@ -42,7 +42,7 @@ export default function SignupScreen() {
         }
 
         if (!isPasswordValid(password)) {
-            Alert.alert('Contraseña no válida', 'La contraseña debe tener al menos 9 dígitos y un carácter especial.');
+            Alert.alert('Contraseña no válida', 'La contraseña debe tener al menos 8 dígitos y un carácter especial.');
             return;
         }
 
