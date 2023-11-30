@@ -3,6 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, Alert } from
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { Ionicons } from '@expo/vector-icons';;
 
 const CursoActivoScreen = () => {
     const [cursosActivos, setCursosActivos] = useState([]);
@@ -18,6 +19,7 @@ const CursoActivoScreen = () => {
                             'Authorization': `Token ${token}`
                         }
                     });
+
                     setCursosActivos(response.data);
                 } catch (error) {
                     console.error('Error al obtener cursos activos:', error);
@@ -28,6 +30,35 @@ const CursoActivoScreen = () => {
 
         fetchCursosActivos();
     }, []);
+
+    useEffect(() => {
+        navigation.setOptions({
+          headerShown: true,
+          headerLeft: () => (
+            <TouchableOpacity
+              style={styles.headerButton}
+              onPress={() => navigation.goBack()}>
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color="#003366"
+              />
+            </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <TouchableOpacity
+              style={styles.headerButton}
+              onPress={() => navigation.toggleDrawer()}>
+              <Ionicons
+                name="md-menu"
+                size={24}
+                color="#003366"
+              />
+            </TouchableOpacity>
+          ),
+          title: 'Cursos Activos', // Cambia el título según corresponda
+        });
+      }, [navigation]);
 
     const continuarCurso = (cursoId) => {
         console.log('Curso ID:', cursoId);
@@ -44,8 +75,10 @@ const CursoActivoScreen = () => {
                         <View style={styles.cursoItem}>
                             <Text style={styles.cursoTitle}>{item.curso.nombre}</Text>
                             <Text style={styles.cursoDescription}>{item.curso.descripcion}</Text>
-                            <View style={styles.cursoImageContainer}>
-                            <Image source={{ uri: imageUrl }} style={styles.cursoImage} />
+                            <View style={styles.frameContainer}>
+                                <View style={styles.cursoImageContainer}>
+                                    <Image source={{ uri: imageUrl }} style={styles.cursoImage} />
+                                </View>
                             </View>
                             <TouchableOpacity
                                 className="w-full bg-yellow-500 p-3 rounded-2xl mb-3"
@@ -56,7 +89,7 @@ const CursoActivoScreen = () => {
                     );
                 }}
                 keyExtractor={item => (item.id ? item.id.toString() : 'default_key')}
-                />
+            />
         </View>
     );
 };
@@ -78,24 +111,36 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'center',
-        paddingBottom: 10 
+        paddingBottom: 10
     },
     cursoDescription: {
         fontSize: 12,
-        textAlign: 'justify'
+        textAlign: 'justify',
+        paddingBottom: 10
+    },
+    frameContainer: {
+        borderWidth: 2, // Grosor del marco
+        borderColor: '#003366', // Color del marco
+        padding: 2, // Espacio entre el marco y la imagen
+        shadowColor: '#000', // Color de la sombra
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 5, // Elevación en Android
+        marginBottom: 15, // Espacio debajo del marco
     },
     cursoImageContainer: {
-        width: '100%', // Asume el ancho completo del contenedor
-        height: 180, // Altura fija para el contenedor de la imagen
+        width: '80%', // Menor que el 100% para que no tome el ancho completo
+        height: 150, // Altura fija para el contenedor de la imagen
         justifyContent: 'center', // Centra la imagen verticalmente
         alignItems: 'center', // Centra la imagen horizontalmente
         marginVertical: 10, // Espaciado vertical para separar el contenedor de imagen de otros elementos
+        alignSelf: 'center', // Asegura que el contenedor de la imagen también esté centrado en su contenedor padre
     },
     cursoImage: {
-        width: '100%', // Ancho fijo para todas las imágenes
-        height: '100%', // Altura fija para todas las imágenes
-        resizeMode: 'stretch', // La imagen cubrirá el espacio asignado, posiblemente recortándose
-        marginVertical: 10, // Espaciado vertical para separar la imagen de otros elementos
+        width: '100%', // Ancho relativo al contenedor
+        height: '100%', // Altura relativa al contenedor
+        resizeMode: 'contain', // Cambiado de 'stretch' a 'contain'
     },
     continuarButton: {
         backgroundColor: 'blue',

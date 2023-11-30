@@ -1,11 +1,12 @@
 // screens/SettingsScreen.js
 
 import React, { useState, useEffect, useContext } from 'react';
-import { View, TextInput, Button, Alert, Text, TouchableOpacity } from 'react-native';
+import { View, TextInput, Button, Alert, Text, TouchableOpacity, StyleSheet, } from 'react-native';
 import { AuthContext } from '../AuthContext';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 const SettingsScreen = () => {
   const { logout, isLoading, error } = useContext(AuthContext);
@@ -44,6 +45,35 @@ const SettingsScreen = () => {
 
     fetchUserInfo();
   }, []);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      headerLeft: () => (
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => navigation.goBack()}>
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color="#003366"
+          />
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => navigation.toggleDrawer()}>
+          <Ionicons
+            name="md-menu"
+            size={24}
+            color="#003366"
+          />
+        </TouchableOpacity>
+      ),
+      title: 'Settings', // Cambia el título según corresponda
+    });
+  }, [navigation]);
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmNewPassword) {
@@ -138,4 +168,11 @@ const SettingsScreen = () => {
   );
 };
 
+const styles = StyleSheet.create({
+  headerButton: {
+      paddingHorizontal: 10,
+  },
+});
+
+ 
 export default SettingsScreen;

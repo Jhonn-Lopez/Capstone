@@ -79,7 +79,7 @@ const CursoNoIniScreen = () => {
                     <Ionicons
                         name="arrow-back"
                         size={24}
-                        color="black"
+                        color="#003366"
                     />
                 </TouchableOpacity>
             ),
@@ -90,7 +90,7 @@ const CursoNoIniScreen = () => {
                     <Ionicons
                         name="md-menu"
                         size={24}
-                        color="black"
+                        color="#003366"
                     />
                 </TouchableOpacity>
             ),
