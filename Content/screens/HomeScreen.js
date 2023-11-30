@@ -62,7 +62,7 @@ const HomeScreen = () => {
         if (response.data && response.data.length > 0) {
           navigation.navigate('CursoNoIniciado');
         } else {
-          Alert.alert("No hay nuevos cursos disponibles", "Haz iniciado todos los cursos disponibles!");
+          Alert.alert("No hay nuevos cursos disponibles", "Espera nuevo contenido!");
         }
       } catch (error) {
         console.error('Error al verificar cursos sin iniciar:', error);
