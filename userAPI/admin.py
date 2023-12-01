@@ -84,3 +84,4 @@ class ContenidoAdmin(admin.ModelAdmin):
     list_filter = ('activo',)
     search_fields = ('titulo', 'modulo__nombre')
     form = ContenidoAdminForm  # Usa el formulario personalizado
+

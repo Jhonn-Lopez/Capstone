@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso
+from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso, Contenido
 
 User = get_user_model()
 
@@ -36,20 +36,27 @@ class PreguntaSerializer(serializers.ModelSerializer):
 
 
 class CuestionarioSerializer(serializers.ModelSerializer):
+    # Asumiendo que tienes un serializer para las preguntas del cuestionario
     preguntas = PreguntaSerializer(many=True, read_only=True)
+    id_cuestionario = serializers.IntegerField(source='id')
 
     class Meta:
         model = Cuestionario
-        fields = ['modulo', 'activo', 'preguntas']
+        fields = ['id_cuestionario', 'nombre', 'preguntas']
 
-
+class ContenidoSerializer(serializers.ModelSerializer):
+    id_contenido = serializers.IntegerField(source='id')
+    class Meta:
+        model = Contenido
+        fields = ['id_contenido', 'titulo', 'video', 'duracion_video', 'imagen', 'archivo']
 class ModuloSerializer(serializers.ModelSerializer):
     cuestionario = CuestionarioSerializer(read_only=True)
+    contenidos = ContenidoSerializer(many=True, read_only=True) 
     id_modulo = serializers.IntegerField(source='id')  # Cambia el nombre del campo 'id' a 'id_modulo'
 
     class Meta:
         model = Modulo
-        fields = ['id_modulo', 'curso', 'nombre', 'descripcion', 'activo', 'cuestionario']
+        fields = ['id_modulo', 'curso', 'nombre', 'descripcion', 'activo', 'contenidos', 'cuestionario']
 
 class CursoSerializer(serializers.ModelSerializer):
     modulos = ModuloSerializer(many=True, read_only=True)
@@ -66,3 +73,7 @@ class ProgresoCursoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgresoCurso
         fields = ('id_progresoCurso', 'usuario', 'curso', 'estado', 'fecha_inicio', 'ultima_actividad')
+
+
+
+

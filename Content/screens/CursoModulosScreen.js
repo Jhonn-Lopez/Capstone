@@ -30,8 +30,9 @@ const CursoModulosScreen = ({ route }) => {
                 const response = await axios.get(`http://localhost:8000/api/cursos/${cursoId}/`, {
                     headers: { 'Authorization': `Token ${token}` },
                 });
+                
                 const imageUrl = `http://localhost:8000/api/${response.data.imagen.replace('http://localhost:8000/', '')}`;
-                console.log(`CursoModulosScreen - Image URL: ${imageUrl}`); // Añadir esta línea para depurar
+                
                 const cursoDataWithCorrectedImageUrl = {
                     ...response.data,
                     imagen: imageUrl
@@ -91,20 +92,21 @@ const CursoModulosScreen = ({ route }) => {
 
     const renderContent = section => (
         <View style={styles.content}>
-            {section.descripcion ? <Text style={styles.contentText}>{section.descripcion}</Text> : null}
-            {section.contenidos && section.contenidos.map((contenido) => (
+            {section.descripcion && <Text style={styles.contentText}>{section.descripcion}</Text>}
+            {section.contenidos && section.contenidos.map(contenido => (
                 <View key={contenido.id} style={styles.contentItem}>
                     <Text style={styles.contentItemTitle}>{contenido.titulo}</Text>
                     {contenido.duracion_video && (
                         <Text style={styles.contentDuration}>Duración: {formatDuration(contenido.duracion_video)}</Text>
                     )}
+                    {/* Renderizar imagen y archivo si existen */}
                 </View>
             ))}
-            {section.cuestionario && (
-                <Text style={styles.cuestionarioTitle}>{section.cuestionario.nombre}</Text>
-            )}
+            {section.cuestionario && <Text style={styles.cuestionarioTitle}>{section.cuestionario.nombre}</Text>}
+            {/* Renderizar detalles del cuestionario si es necesario */}
         </View>
     );
+    
 
     if (isLoading) {
         return (
@@ -244,6 +246,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         paddingTop: 10,
+    },
+    contentImage: {
+        width: '100%', // Ancho completo
+        height: 200, // Altura fija o dinámica
+        resizeMode: 'contain',
     },
     // ...otros estilos que necesites
 });

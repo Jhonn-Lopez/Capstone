@@ -195,9 +195,6 @@ class CursoProgresoViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """
-        Este método sobrescrito devuelve los cursos asociados con el progreso
-        del usuario autenticado.
-        """
+        # Retorna los cursos asociados al progreso del curso del usuario autenticado
         user = self.request.user
-        return self.queryset.filter(progreso_cursos__usuario=user)
+        return Curso.objects.filter(progreso_cursos__usuario=user)

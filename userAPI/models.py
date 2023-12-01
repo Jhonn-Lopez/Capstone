@@ -107,7 +107,6 @@ class ProgresoUsuario(models.Model):
 class Contenido(models.Model):
     modulo = models.ForeignKey(Modulo, related_name='contenidos', on_delete=models.CASCADE)
     titulo = models.CharField(max_length=200)
-    descripcion = models.TextField(blank=True, null=True)
     video = models.FileField(upload_to='contenidos/videos/', blank=True, null=True)
     duracion_video = models.DurationField(blank=True, null=True)  # Guarda la duración del video
     imagen = models.ImageField(upload_to='contenidos/imagenes/', blank=True, null=True)
