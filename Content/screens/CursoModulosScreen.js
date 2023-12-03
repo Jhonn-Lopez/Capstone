@@ -22,6 +22,7 @@ const CursoModulosScreen = ({ route }) => {
     const [activeSections, setActiveSections] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
+    const videoUrl = 'https://download-video.akamaized.net/v3-1/playback/ce631519-e592-4a35-87f2-4a092c75193a/bb1a482a?__token__=st=1701641659~exp=1701656059~acl=%2Fv3-1%2Fplayback%2Fce631519-e592-4a35-87f2-4a092c75193a%2Fbb1a482a%2A~hmac=8307ed3865a7ee7f90a6b958e943ae8a0124a578af39ddae422bfb4b65d0eba9&r=dXMtZWFzdDE%3D';
 
     useEffect(() => {
         const fetchCursoDetails = async () => {
