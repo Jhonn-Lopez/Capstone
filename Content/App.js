@@ -12,6 +12,7 @@ import CursoActivoScreen from "./screens/CursoActivoScreen"
 import CursoComplScreen from "./screens/CursoComplScreen"
 import CursoNoIniScreen from "./screens/CursoNoIniScreen"
 import CursoModulos from "./screens/CursoModulosScreen"
+import VideoPlayerScreen from "./screens/VideoPlayerScreen"
 
 
 
@@ -26,6 +27,7 @@ function App() {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignupScreen} />
           <Stack.Screen name="Drawer" component={DrawerNavigation} />
+          <Stack.Screen name="VideoPlayerScreen" component={VideoPlayerScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

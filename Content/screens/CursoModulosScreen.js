@@ -7,6 +7,7 @@ import {
     Image,
     ScrollView,
     ActivityIndicator,
+    Button,
 } from 'react-native';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
@@ -30,9 +31,9 @@ const CursoModulosScreen = ({ route }) => {
                 const response = await axios.get(`http://localhost:8000/api/cursos/${cursoId}/`, {
                     headers: { 'Authorization': `Token ${token}` },
                 });
-                
+
                 const imageUrl = `http://localhost:8000/api/${response.data.imagen.replace('http://localhost:8000/', '')}`;
-                
+
                 const cursoDataWithCorrectedImageUrl = {
                     ...response.data,
                     imagen: imageUrl
@@ -50,38 +51,48 @@ const CursoModulosScreen = ({ route }) => {
 
     useEffect(() => {
         if (cursoData && cursoData.nombre) {
-          navigation.setOptions({
-            headerShown: true,
-            headerTitle: cursoData.nombre, // Establece el nombre del curso como título
-            headerLeft: () => (
-              <TouchableOpacity
-                style={styles.headerButton}
-                onPress={() => navigation.goBack()}>
-                <Ionicons
-                  name="arrow-back"
-                  size={24}
-                  color="#003366"
-                />
-              </TouchableOpacity>
-            ),
-            headerRight: () => (
-              <TouchableOpacity
-                style={styles.headerButton}
-                onPress={() => navigation.toggleDrawer()}>
-                <Ionicons
-                  name="md-menu"
-                  size={24}
-                  color="#003366"
-                />
-              </TouchableOpacity>
-            ),
-          });
+            navigation.setOptions({
+                headerShown: true,
+                headerTitle: cursoData.nombre, // Establece el nombre del curso como título
+                headerLeft: () => (
+                    <TouchableOpacity
+                        style={styles.headerButton}
+                        onPress={() => navigation.goBack()}>
+                        <Ionicons
+                            name="arrow-back"
+                            size={24}
+                            color="#003366"
+                        />
+                    </TouchableOpacity>
+                ),
+                headerRight: () => (
+                    <TouchableOpacity
+                        style={styles.headerButton}
+                        onPress={() => navigation.toggleDrawer()}>
+                        <Ionicons
+                            name="md-menu"
+                            size={24}
+                            color="#003366"
+                        />
+                    </TouchableOpacity>
+                ),
+            });
         }
-      }, [navigation, cursoData]);
+    }, [navigation, cursoData]);
 
     const formatDuration = (duration) => {
         // Aquí debes convertir la duración de tus videos a un formato legible
         return duration; // Este es solo un placeholder
+    };
+
+    const handlePressVideo = (contenido) => {
+        if (contenido.video) {
+            // Aquí se realiza el reemplazo en la URL del video
+            const videoUrl = `http://localhost:8000/api/${contenido.video.replace('http://localhost:8000/', '')}`;
+            navigation.navigate('VideoPlayerScreen', { videoUrl });
+        } else {
+            console.warn('No hay video para este contenido');
+        }
     };
 
     const renderHeader = (section, _, isActive) => (
@@ -93,20 +104,19 @@ const CursoModulosScreen = ({ route }) => {
     const renderContent = section => (
         <View style={styles.content}>
             {section.descripcion && <Text style={styles.contentText}>{section.descripcion}</Text>}
-            {section.contenidos && section.contenidos.map(contenido => (
+            {Array.isArray(section.contenidos) && section.contenidos.map(contenido => (
                 <View key={contenido.id} style={styles.contentItem}>
-                    <Text style={styles.contentItemTitle}>{contenido.titulo}</Text>
+                    <TouchableOpacity onPress={() => handlePressVideo(contenido)}>
+                        <Text style={styles.contentItemTitle}>{contenido.titulo}</Text>
+                    </TouchableOpacity>
                     {contenido.duracion_video && (
                         <Text style={styles.contentDuration}>Duración: {formatDuration(contenido.duracion_video)}</Text>
                     )}
-                    {/* Renderizar imagen y archivo si existen */}
                 </View>
             ))}
             {section.cuestionario && <Text style={styles.cuestionarioTitle}>{section.cuestionario.nombre}</Text>}
-            {/* Renderizar detalles del cuestionario si es necesario */}
         </View>
     );
-    
 
     if (isLoading) {
         return (
@@ -119,7 +129,6 @@ const CursoModulosScreen = ({ route }) => {
 
     return (
         <ScrollView style={styles.container}>
-            {/* Contenedor de la imagen agregado */}
             <View style={styles.cursoItem}>
                 <Text style={styles.cursoDescription}>{cursoData.descripcion}</Text>
                 <View style={styles.frameContainer}>
@@ -127,12 +136,22 @@ const CursoModulosScreen = ({ route }) => {
                         {cursoData.imagen ? (
                             <Image source={{ uri: cursoData.imagen }} style={styles.cursoImage} />
                         ) : (
-                            <Text>No hay imagen disponible</Text> // O algún placeholder
+                            <Text>No hay imagen disponible</Text>
                         )}
                     </View>
                 </View>
                 <View style={styles.separator} />
             </View>
+
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>Detalles del Curso</Text>
+                {/* Ejemplo de Botón para navegar a VideoPlayerScreen */}
+                <Button
+                    title="Ver Video"
+                    onPress={() => navigation.navigate('VideoPlayerScreen', { videoUrl })}
+                />
+            </View>
+
             <Accordion
                 sections={cursoData.modulos || []}
                 activeSections={activeSections}
@@ -143,6 +162,7 @@ const CursoModulosScreen = ({ route }) => {
         </ScrollView>
     );
 };
+
 const styles = StyleSheet.create({
     headerButton: {
         paddingHorizontal: 10,
