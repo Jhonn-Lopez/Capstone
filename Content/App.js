@@ -27,7 +27,6 @@ function App() {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignupScreen} />
           <Stack.Screen name="Drawer" component={DrawerNavigation} />
-          <Stack.Screen name="VideoPlayerScreen" component={VideoPlayerScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>
@@ -43,6 +42,7 @@ const DrawerNavigation = () => {
       <Drawer.Screen name="CursoCompletado" component={CursoComplScreen} options={{ drawerItemStyle: { height: 0 } }} />
       <Drawer.Screen name="CursoNoIniciado" component={CursoNoIniScreen} options={{ drawerItemStyle: { height: 0 } }} />
       <Drawer.Screen name="CursoModulos" component={CursoModulos} options={{ drawerItemStyle: { height: 0 } }} />
+      <Drawer.Screen name="VideoPlayerScreen" component={VideoPlayerScreen} options={{ drawerItemStyle: { height: 0 } }} />
       {/* ... otras pantallas ... */}
     </Drawer.Navigator>
   );

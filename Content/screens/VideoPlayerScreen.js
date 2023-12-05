@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Video } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -8,21 +8,12 @@ const VideoPlayerScreen = ({ route }) => {
     const { videoUrl } = route.params;
     const videoRef = useRef(null);
     const [status, setStatus] = useState({});
+    const [isBuffering, setIsBuffering] = useState(false);
     const navigation = useNavigation();
 
     useEffect(() => {
-        const loadVideo = async () => {
-            try {
-                await videoRef.current.loadAsync({ uri: videoUrl }, {}, true);
-            } catch (e) {
-                console.error("Error al cargar el video:", e);
-            }
-        };
-
-        loadVideo();
-    }, [videoUrl]);
-
-    useEffect(() => {
+        console.log("URL del video:", videoUrl);
+        
         navigation.setOptions({
             headerShown: true,
             headerTitle: 'Reproductor de Video',
@@ -30,47 +21,79 @@ const VideoPlayerScreen = ({ route }) => {
                 <TouchableOpacity
                     style={styles.headerButton}
                     onPress={() => navigation.goBack()}>
-                    <Ionicons
-                        name="arrow-back"
-                        size={24}
-                        color="#003366"
-                    />
+                    <Ionicons name="arrow-back" size={24} color="#003366" />
                 </TouchableOpacity>
             ),
             headerRight: () => (
                 <TouchableOpacity
                     style={styles.headerButton}
                     onPress={() => navigation.toggleDrawer()}>
-                    <Ionicons
-                        name="md-menu"
-                        size={24}
-                        color="#003366"
-                    />
+                    <Ionicons name="md-menu" size={24} color="#003366" />
                 </TouchableOpacity>
             ),
         });
-    }, [navigation]);
+    }, [navigation, videoUrl]);
+
+    const handlePlaybackStatusUpdate = (playbackStatus) => {
+        setStatus(playbackStatus);
+        if (!playbackStatus.isLoaded) {
+            if (playbackStatus.error) {
+                console.log(`Error de reproducción: ${playbackStatus.error}`);
+                setIsBuffering(false);
+            }
+        } else {
+            if (playbackStatus.isBuffering) {
+                setIsBuffering(true);
+            } else {
+                setIsBuffering(false);
+            }
+        }
+    };
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={styles.container}>
             <Video
                 ref={videoRef}
-                resizeMode="contain"
-                style={{ width: '100%', height: '100%' }}
+                source={{ uri: videoUrl }}
+                style={styles.video}
                 useNativeControls
-                isLooping
+                resizeMode="contain"
+                onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
                 shouldPlay
-                onPlaybackStatusUpdate={status => setStatus(() => status)}
             />
+            {isBuffering && (
+                <View style={styles.buffering}>
+                    <ActivityIndicator size="large" color="#00ff00" />
+                    <Text>Cargando video...</Text>
+                </View>
+            )}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#000',
+    },
+    video: {
+        width: '100%',
+        height: 300,
+    },
+    buffering: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     headerButton: {
         paddingHorizontal: 10,
     },
-    // ...otros estilos que necesites
 });
 
 export default VideoPlayerScreen;

@@ -15,14 +15,13 @@ import Accordion from 'react-native-collapsible/Accordion';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-
 const CursoModulosScreen = ({ route }) => {
     const { cursoId } = route.params;
     const [cursoData, setCursoData] = useState({});
     const [activeSections, setActiveSections] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
-    const videoUrl = 'https://download-video.akamaized.net/v3-1/playback/ce631519-e592-4a35-87f2-4a092c75193a/bb1a482a?__token__=st=1701641659~exp=1701656059~acl=%2Fv3-1%2Fplayback%2Fce631519-e592-4a35-87f2-4a092c75193a%2Fbb1a482a%2A~hmac=8307ed3865a7ee7f90a6b958e943ae8a0124a578af39ddae422bfb4b65d0eba9&r=dXMtZWFzdDE%3D';
+    const videoUrl = 'https://cdn.coverr.co/videos/coverr-a-guy-cleaning-the-beach-6515/1080p.mp4';
 
     useEffect(() => {
         const fetchCursoDetails = async () => {
@@ -54,7 +53,7 @@ const CursoModulosScreen = ({ route }) => {
         if (cursoData && cursoData.nombre) {
             navigation.setOptions({
                 headerShown: true,
-                headerTitle: cursoData.nombre, // Establece el nombre del curso como título
+                headerTitle: cursoData.nombre, 
                 headerLeft: () => (
                     <TouchableOpacity
                         style={styles.headerButton}
@@ -82,13 +81,11 @@ const CursoModulosScreen = ({ route }) => {
     }, [navigation, cursoData]);
 
     const formatDuration = (duration) => {
-        // Aquí debes convertir la duración de tus videos a un formato legible
-        return duration; // Este es solo un placeholder
+        return duration; // Placeholder
     };
 
     const handlePressVideo = (contenido) => {
         if (contenido.video) {
-            // Aquí se realiza el reemplazo en la URL del video
             const videoUrl = `http://localhost:8000/api/${contenido.video.replace('http://localhost:8000/', '')}`;
             navigation.navigate('VideoPlayerScreen', { videoUrl });
         } else {
@@ -105,8 +102,8 @@ const CursoModulosScreen = ({ route }) => {
     const renderContent = section => (
         <View style={styles.content}>
             {section.descripcion && <Text style={styles.contentText}>{section.descripcion}</Text>}
-            {Array.isArray(section.contenidos) && section.contenidos.map(contenido => (
-                <View key={contenido.id} style={styles.contentItem}>
+            {Array.isArray(section.contenidos) && section.contenidos.map((contenido, index) => (
+                <View key={contenido.id ? contenido.id.toString() : index.toString()} style={styles.contentItem}>
                     <TouchableOpacity onPress={() => handlePressVideo(contenido)}>
                         <Text style={styles.contentItemTitle}>{contenido.titulo}</Text>
                     </TouchableOpacity>
@@ -146,7 +143,6 @@ const CursoModulosScreen = ({ route }) => {
 
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Text>Detalles del Curso</Text>
-                {/* Ejemplo de Botón para navegar a VideoPlayerScreen */}
                 <Button
                     title="Ver Video"
                     onPress={() => navigation.navigate('VideoPlayerScreen', { videoUrl })}
