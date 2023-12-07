@@ -21,7 +21,7 @@ const CursoModulosScreen = ({ route }) => {
     const [activeSections, setActiveSections] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
-    const videoUrl = 'https://cdn.coverr.co/videos/coverr-a-guy-cleaning-the-beach-6515/1080p.mp4';
+    const videoUrl = 'https://res.cloudinary.com/dnnpkmi7n/video/upload/v1701990105/Modulo_1_-_Valores_de_Agilidad_y_Scrum_qpcjzt.mp4'; // Usar Coverr para sacar links.
 
     useEffect(() => {
         const fetchCursoDetails = async () => {
