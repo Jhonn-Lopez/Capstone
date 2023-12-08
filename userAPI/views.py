@@ -11,8 +11,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password
 from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso, CustomUser, ProgresoUsuario
-from .serializers import UserSerializer, CursoSerializer, ModuloSerializer, CuestionarioSerializer, PreguntaSerializer, RespuestaSerializer, ProgresoCursoSerializer
+from .serializers import UserSerializer, CursoSerializer, ModuloSerializer, CuestionarioSerializer, PreguntaSerializer, RespuestaSerializer, ProgresoCursoSerializer, ProgresoUsuarioSerializer
 from django.db.models import Min
+from rest_framework.views import APIView
 
 User = get_user_model()
 
@@ -198,3 +199,11 @@ class CursoProgresoViewSet(viewsets.ReadOnlyModelViewSet):
         # Retorna los cursos asociados al progreso del curso del usuario autenticado
         user = self.request.user
         return Curso.objects.filter(progreso_cursos__usuario=user)
+
+class ProgresoModulosUsuario(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, curso_id):
+        progreso_modulos = ProgresoUsuario.objects.filter(usuario=request.user, curso__id=curso_id)
+        serializer = ProgresoUsuarioSerializer(progreso_modulos, many=True)
+        return Response(serializer.data)

@@ -13,102 +13,142 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import Accordion from 'react-native-collapsible/Accordion';
 import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const CursoModulosScreen = ({ route }) => {
     const { cursoId } = route.params;
     const [cursoData, setCursoData] = useState({});
+    const [progresoModulos, setProgresoModulos] = useState({});
     const [activeSections, setActiveSections] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
 
+
+
     useEffect(() => {
         const fetchCursoDetails = async () => {
+            console.log("Inicio de fetchCursoDetails");
             setIsLoading(true);
             const token = await SecureStore.getItemAsync('userToken');
             try {
-                const response = await axios.get(`http://localhost:8000/api/cursos/${cursoId}/`, {
+                console.log("Obteniendo detalles del curso");
+                const responseCurso = await axios.get(`http://localhost:8000/api/cursos/${cursoId}/`, {
+                    headers: { 'Authorization': `Token ${token}` },
+                });
+                console.log("Detalles del curso: ", responseCurso.data);
+                
+                // Actualizar la imagen del curso solo una vez
+                let cursoActualizado = {
+                    ...responseCurso.data,
+                    imagen: responseCurso.data.imagen ? `http://localhost:8000/api/${responseCurso.data.imagen.replace('http://localhost:8000/', '')}` : null
+                };
+                setCursoData(cursoActualizado);
+
+                console.log("Obteniendo progreso del curso para el usuario");
+                const responseProgresoUsuario = await axios.get(`http://localhost:8000/api/progreso_modulos_usuario/${cursoId}/`, {
                     headers: { 'Authorization': `Token ${token}` },
                 });
 
-                const imageUrl = `http://localhost:8000/api/${response.data.imagen.replace('http://localhost:8000/', '')}`;
-
-                const cursoDataWithCorrectedImageUrl = {
-                    ...response.data,
-                    imagen: imageUrl
-                };
-                setCursoData(cursoDataWithCorrectedImageUrl);
+                let progresoModulos = {};
+                responseProgresoUsuario.data.forEach(item => {
+                    progresoModulos[item.modulo] = item.estado;
+                });
+                console.log("Progreso procesado: ", progresoModulos);
+                setProgresoModulos(progresoModulos);
             } catch (error) {
                 console.error('Error fetching course details: ', error);
             } finally {
                 setIsLoading(false);
+                console.log("Final de fetchCursoDetails");
             }
         };
 
         fetchCursoDetails();
     }, [cursoId]);
 
-    useEffect(() => {
-        if (cursoData && cursoData.nombre) {
-            navigation.setOptions({
-                headerShown: true,
-                headerTitle: cursoData.nombre,
-                headerLeft: () => (
-                    <TouchableOpacity
-                        style={styles.headerButton}
-                        onPress={() => navigation.goBack()}>
-                        <Ionicons
-                            name="arrow-back"
-                            size={24}
-                            color="#003366"
-                        />
-                    </TouchableOpacity>
-                ),
-                headerRight: () => (
-                    <TouchableOpacity
-                        style={styles.headerButton}
-                        onPress={() => navigation.toggleDrawer()}>
-                        <Ionicons
-                            name="md-menu"
-                            size={24}
-                            color="#003366"
-                        />
-                    </TouchableOpacity>
-                ),
-            });
-        }
-    }, [navigation, cursoData]);
+   
 
-    const formatDuration = (duration) => {
-        return duration; // Placeholder
-    };
+useEffect(() => {
+    if (cursoData && cursoData.nombre) {
+        navigation.setOptions({
+            headerShown: true,
+            headerTitle: cursoData.nombre,
+            headerLeft: () => (
+                <TouchableOpacity
+                    style={styles.headerButton}
+                    onPress={() => navigation.goBack()}>
+                    <Ionicons
+                        name="arrow-back"
+                        size={24}
+                        color="#003366"
+                    />
+                </TouchableOpacity>
+            ),
+            headerRight: () => (
+                <TouchableOpacity
+                    style={styles.headerButton}
+                    onPress={() => navigation.toggleDrawer()}>
+                    <Ionicons
+                        name="md-menu"
+                        size={24}
+                        color="#003366"
+                    />
+                </TouchableOpacity>
+            ),
+        });
+    }
+}, [navigation, cursoData]);
 
-    const handlePressVideo = (contenido) => {
-        if (contenido.video) {
-            const videoUrl = `http://localhost:8000/api/${contenido.video.replace('http://localhost:8000/', '')}`;
-            navigation.navigate('VideoPlayerScreen', { videoUrl });
-        } else {
-            console.warn('No hay video para este contenido');
-        }
-    };
+const isModuleLocked = (moduloId) => {
+    const estadoModulo = progresoModulos[moduloId];
+    return !estadoModulo || estadoModulo === 'no_iniciado';
+  };
 
-    const handlePressCuestionario = (idCuestionario) => {
-        console.log('Cuestionario ID:', idCuestionario); // Deberías ver el ID correcto aquí
-        if(idCuestionario) {
-            navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario });
-        } else {
-            console.error('Cuestionario ID es undefined.');
-        }
-    };
-    
+const formatDuration = (duration) => {
+    return duration; // Placeholder
+};
 
-    const renderHeader = (section, _, isActive) => (
+const handlePressVideo = (contenido) => {
+    if (contenido.video) {
+        const videoUrl = `http://localhost:8000/api/${contenido.video.replace('http://localhost:8000/', '')}`;
+        navigation.navigate('VideoPlayerScreen', { videoUrl });
+    } else {
+        console.warn('No hay video para este contenido');
+    }
+};
+
+const handlePressCuestionario = (idCuestionario) => {
+    if (idCuestionario) {
+        navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario });
+    } else {
+        console.error('Cuestionario ID es undefined.');
+    }
+};
+
+const renderHeader = (section, _, isActive) => {
+    const locked = isModuleLocked(section.id_modulo);
+    return (
         <View style={isActive ? styles.headerActive : styles.header}>
+            {locked && <FontAwesome name="lock" size={24} color="black" />}
             <Text style={styles.headerText}>{section.nombre}</Text>
         </View>
     );
+};
 
-    const renderContent = section => (
+const updateActiveSections = (sections) => {
+    const filteredSections = sections.filter((sectionIndex) => {
+        const section = cursoData.modulos[sectionIndex];
+        return section.activo;
+    });
+    setActiveSections(filteredSections);
+};
+
+const renderContent = section => {
+    const locked = isModuleLocked(section.id_modulo);
+    if (locked) return null;
+
+    return (
         <View style={styles.content}>
             {section.descripcion && <Text style={styles.contentText}>{section.descripcion}</Text>}
             {Array.isArray(section.contenidos) && section.contenidos.map((contenido, index) => (
@@ -122,58 +162,59 @@ const CursoModulosScreen = ({ route }) => {
                 </View>
             ))}
             {section.cuestionario && (
-                // Envuelve el título del cuestionario en un TouchableOpacity para manejar la navegación
                 <TouchableOpacity onPress={() => handlePressCuestionario(section.cuestionario.id_cuestionario)}>
                     <Text style={styles.cuestionarioTitle}>{section.cuestionario.nombre}</Text>
                 </TouchableOpacity>
             )}
         </View>
     );
-
-    if (isLoading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" />
-                <Text>Cargando información del curso...</Text>
-            </View>
-        );
-    }
-
-    return (
-        <ScrollView style={styles.container}>
-            <View style={styles.cursoItem}>
-                <Text style={styles.cursoDescription}>{cursoData.descripcion}</Text>
-                <View style={styles.frameContainer}>
-                    <View style={styles.cursoImageContainer}>
-                        {cursoData.imagen ? (
-                            <Image source={{ uri: cursoData.imagen }} style={styles.cursoImage} />
-                        ) : (
-                            <Text>No hay imagen disponible</Text>
-                        )}
-                    </View>
-                </View>
-                <View style={styles.separator} />
-            </View>
-
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>Detalles del Curso</Text>
-                <Button
-                    title="Ver Video"
-                    onPress={() => navigation.navigate('VideoPlayerScreen', { videoUrl })}
-                />
-            </View>
-
-            <Accordion
-                sections={cursoData.modulos || []}
-                activeSections={activeSections}
-                renderHeader={renderHeader}
-                renderContent={renderContent}
-                onChange={setActiveSections}
-            />
-        </ScrollView>
-    );
 };
 
+if (isLoading) {
+    return (
+        <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" />
+            <Text>Cargando información del curso...</Text>
+        </View>
+    );
+}
+
+return (
+    <ScrollView style={styles.container}>
+        <View style={styles.cursoItem}>
+            <Text style={styles.cursoDescription}>{cursoData.descripcion}</Text>
+            <View style={styles.frameContainer}>
+                <View style={styles.cursoImageContainer}>
+                    {cursoData.imagen ? (
+                        <Image source={{ uri: cursoData.imagen }} style={styles.cursoImage} />
+                    ) : (
+                        <Text>No hay imagen disponible</Text>
+                    )}
+                </View>
+            </View>
+            <View style={styles.separator} />
+        </View>
+
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text>Detalles del Curso</Text>
+            <Button
+                title="Ver Video"
+                onPress={() => navigation.navigate('VideoPlayerScreen', { videoUrl })}
+            />
+        </View>
+
+        <Accordion
+            sections={cursoData.modulos || []}
+            activeSections={activeSections}
+            renderHeader={renderHeader}
+            renderContent={renderContent}
+            onChange={updateActiveSections}
+        />
+    </ScrollView>
+);
+};
+
+// Estilos
 const styles = StyleSheet.create({
     headerButton: {
         paddingHorizontal: 10,
@@ -287,3 +328,4 @@ const styles = StyleSheet.create({
 });
 
 export default CursoModulosScreen;
+
