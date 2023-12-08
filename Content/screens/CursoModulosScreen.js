@@ -67,8 +67,6 @@ const CursoModulosScreen = ({ route }) => {
         fetchCursoDetails();
     }, [cursoId]);
 
-   
-
 useEffect(() => {
     if (cursoData && cursoData.nombre) {
         navigation.setOptions({
@@ -130,8 +128,8 @@ const renderHeader = (section, _, isActive) => {
     const locked = isModuleLocked(section.id_modulo);
     return (
         <View style={isActive ? styles.headerActive : styles.header}>
-            {locked && <FontAwesome name="lock" size={24} color="black" />}
             <Text style={styles.headerText}>{section.nombre}</Text>
+            {locked && <FontAwesome name="lock" size={24} color="black" />}
         </View>
     );
 };
