@@ -21,7 +21,6 @@ const CursoModulosScreen = ({ route }) => {
     const [activeSections, setActiveSections] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
-    const videoUrl = 'https://res.cloudinary.com/dnnpkmi7n/video/upload/v1701990105/Modulo_1_-_Valores_de_Agilidad_y_Scrum_qpcjzt.mp4'; // Usar Coverr para sacar links.
 
     useEffect(() => {
         const fetchCursoDetails = async () => {
@@ -53,7 +52,7 @@ const CursoModulosScreen = ({ route }) => {
         if (cursoData && cursoData.nombre) {
             navigation.setOptions({
                 headerShown: true,
-                headerTitle: cursoData.nombre, 
+                headerTitle: cursoData.nombre,
                 headerLeft: () => (
                     <TouchableOpacity
                         style={styles.headerButton}
@@ -93,6 +92,16 @@ const CursoModulosScreen = ({ route }) => {
         }
     };
 
+    const handlePressCuestionario = (idCuestionario) => {
+        console.log('Cuestionario ID:', idCuestionario); // Deberías ver el ID correcto aquí
+        if(idCuestionario) {
+            navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario });
+        } else {
+            console.error('Cuestionario ID es undefined.');
+        }
+    };
+    
+
     const renderHeader = (section, _, isActive) => (
         <View style={isActive ? styles.headerActive : styles.header}>
             <Text style={styles.headerText}>{section.nombre}</Text>
@@ -112,7 +121,12 @@ const CursoModulosScreen = ({ route }) => {
                     )}
                 </View>
             ))}
-            {section.cuestionario && <Text style={styles.cuestionarioTitle}>{section.cuestionario.nombre}</Text>}
+            {section.cuestionario && (
+                // Envuelve el título del cuestionario en un TouchableOpacity para manejar la navegación
+                <TouchableOpacity onPress={() => handlePressCuestionario(section.cuestionario.id_cuestionario)}>
+                    <Text style={styles.cuestionarioTitle}>{section.cuestionario.nombre}</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 

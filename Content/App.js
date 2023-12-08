@@ -13,7 +13,7 @@ import CursoComplScreen from "./screens/CursoComplScreen"
 import CursoNoIniScreen from "./screens/CursoNoIniScreen"
 import CursoModulos from "./screens/CursoModulosScreen"
 import VideoPlayerScreen from "./screens/VideoPlayerScreen"
-
+import CuestionarioScreen from "./screens/CuestionarioScreen"
 
 
 const Stack = createNativeStackNavigator();
@@ -43,6 +43,7 @@ const DrawerNavigation = () => {
       <Drawer.Screen name="CursoNoIniciado" component={CursoNoIniScreen} options={{ drawerItemStyle: { height: 0 } }} />
       <Drawer.Screen name="CursoModulos" component={CursoModulos} options={{ drawerItemStyle: { height: 0 } }} />
       <Drawer.Screen name="VideoPlayerScreen" component={VideoPlayerScreen} options={{ drawerItemStyle: { height: 0 } }} />
+      <Drawer.Screen name="CuestionarioScreen" component={CuestionarioScreen} options={{ drawerItemStyle: { height: 0 } }} />
       {/* ... otras pantallas ... */}
     </Drawer.Navigator>
   );
