@@ -29,10 +29,11 @@ class RespuestaSerializer(serializers.ModelSerializer):
 
 class PreguntaSerializer(serializers.ModelSerializer):
     respuestas = RespuestaSerializer(many=True, read_only=True)
+    id_pregunta = serializers.IntegerField(source='id')  # Agrega esta línea
 
     class Meta:
         model = Pregunta
-        fields = ['texto', 'respuestas']
+        fields = ['id_pregunta', 'texto', 'respuestas']  # Asegúrate de incluir 'id_pregunta' aquí
 
 
 class CuestionarioSerializer(serializers.ModelSerializer):
