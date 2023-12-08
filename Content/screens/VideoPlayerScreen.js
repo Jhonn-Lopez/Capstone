@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const VideoPlayerScreen = ({ route }) => {
-    const { videoUrl } = route.params;
+    const { videoUrl, cursoId } = route.params;
     const videoRef = useRef(null);
     const [status, setStatus] = useState({});
     const [isBuffering, setIsBuffering] = useState(false);
@@ -20,7 +20,7 @@ const VideoPlayerScreen = ({ route }) => {
             headerLeft: () => (
                 <TouchableOpacity
                     style={styles.headerButton}
-                    onPress={() => navigation.goBack()}>
+                    onPress={handleBackPress}>
                     <Ionicons name="arrow-back" size={24} color="#003366" />
                 </TouchableOpacity>
             ),
@@ -32,7 +32,11 @@ const VideoPlayerScreen = ({ route }) => {
                 </TouchableOpacity>
             ),
         });
-    }, [navigation, videoUrl]);
+    }, [navigation, videoUrl, cursoId]);
+
+    const handleBackPress = () => {
+        navigation.navigate('CursoModulos', { cursoId: cursoId });
+    };
 
     const handlePlaybackStatusUpdate = (playbackStatus) => {
         setStatus(playbackStatus);

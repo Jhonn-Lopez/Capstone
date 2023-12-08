@@ -23,6 +23,7 @@ const CursoModulosScreen = ({ route }) => {
     const [activeSections, setActiveSections] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
+    const videoUrl = 'https://res.cloudinary.com/dnnpkmi7n/video/upload/v1701990105/Modulo_1_-_Valores_de_Agilidad_y_Scrum_qpcjzt.mp4'; // Usar Coverr para sacar links.
 
 
 
@@ -37,7 +38,7 @@ const CursoModulosScreen = ({ route }) => {
                     headers: { 'Authorization': `Token ${token}` },
                 });
                 console.log("Detalles del curso: ", responseCurso.data);
-                
+
                 // Actualizar la imagen del curso solo una vez
                 let cursoActualizado = {
                     ...responseCurso.data,
@@ -67,149 +68,151 @@ const CursoModulosScreen = ({ route }) => {
         fetchCursoDetails();
     }, [cursoId]);
 
-useEffect(() => {
-    if (cursoData && cursoData.nombre) {
-        navigation.setOptions({
-            headerShown: true,
-            headerTitle: cursoData.nombre,
-            headerLeft: () => (
-                <TouchableOpacity
-                    style={styles.headerButton}
-                    onPress={() => navigation.goBack()}>
-                    <Ionicons
-                        name="arrow-back"
-                        size={24}
-                        color="#003366"
-                    />
-                </TouchableOpacity>
-            ),
-            headerRight: () => (
-                <TouchableOpacity
-                    style={styles.headerButton}
-                    onPress={() => navigation.toggleDrawer()}>
-                    <Ionicons
-                        name="md-menu"
-                        size={24}
-                        color="#003366"
-                    />
-                </TouchableOpacity>
-            ),
-        });
-    }
-}, [navigation, cursoData]);
-
-const isModuleLocked = (moduloId) => {
-    const estadoModulo = progresoModulos[moduloId];
-    return !estadoModulo || estadoModulo === 'no_iniciado';
-  };
-
-const formatDuration = (duration) => {
-    return duration; // Placeholder
-};
-
-const handlePressVideo = (contenido) => {
-    if (contenido.video) {
-        const videoUrl = `http://localhost:8000/api/${contenido.video.replace('http://localhost:8000/', '')}`;
-        navigation.navigate('VideoPlayerScreen', { videoUrl });
-    } else {
-        console.warn('No hay video para este contenido');
-    }
-};
-
-const handlePressCuestionario = (idCuestionario) => {
-    if (idCuestionario) {
-        navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario });
-    } else {
-        console.error('Cuestionario ID es undefined.');
-    }
-};
-
-const renderHeader = (section, _, isActive) => {
-    const locked = isModuleLocked(section.id_modulo);
-    return (
-        <View style={isActive ? styles.headerActive : styles.header}>
-            <Text style={styles.headerText}>{section.nombre}</Text>
-            {locked && <FontAwesome name="lock" size={24} color="black" />}
-        </View>
-    );
-};
-
-const updateActiveSections = (sections) => {
-    const filteredSections = sections.filter((sectionIndex) => {
-        const section = cursoData.modulos[sectionIndex];
-        return section.activo;
-    });
-    setActiveSections(filteredSections);
-};
-
-const renderContent = section => {
-    const locked = isModuleLocked(section.id_modulo);
-    if (locked) return null;
-
-    return (
-        <View style={styles.content}>
-            {section.descripcion && <Text style={styles.contentText}>{section.descripcion}</Text>}
-            {Array.isArray(section.contenidos) && section.contenidos.map((contenido, index) => (
-                <View key={contenido.id ? contenido.id.toString() : index.toString()} style={styles.contentItem}>
-                    <TouchableOpacity onPress={() => handlePressVideo(contenido)}>
-                        <Text style={styles.contentItemTitle}>{contenido.titulo}</Text>
+    useEffect(() => {
+        if (cursoData && cursoData.nombre) {
+            navigation.setOptions({
+                headerShown: true,
+                headerTitle: cursoData.nombre,
+                headerLeft: () => (
+                    <TouchableOpacity
+                        style={styles.headerButton}
+                        onPress={() => navigation.goBack()}>
+                        <Ionicons
+                            name="arrow-back"
+                            size={24}
+                            color="#003366"
+                        />
                     </TouchableOpacity>
-                    {contenido.duracion_video && (
-                        <Text style={styles.contentDuration}>Duración: {formatDuration(contenido.duracion_video)}</Text>
-                    )}
-                </View>
-            ))}
-            {section.cuestionario && (
-                <TouchableOpacity onPress={() => handlePressCuestionario(section.cuestionario.id_cuestionario)}>
-                    <Text style={styles.cuestionarioTitle}>{section.cuestionario.nombre}</Text>
-                </TouchableOpacity>
-            )}
-        </View>
-    );
-};
+                ),
+                headerRight: () => (
+                    <TouchableOpacity
+                        style={styles.headerButton}
+                        onPress={() => navigation.toggleDrawer()}>
+                        <Ionicons
+                            name="md-menu"
+                            size={24}
+                            color="#003366"
+                        />
+                    </TouchableOpacity>
+                ),
+            });
+        }
+    }, [navigation, cursoData]);
 
-if (isLoading) {
-    return (
-        <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" />
-            <Text>Cargando información del curso...</Text>
-        </View>
-    );
-}
+    const isModuleLocked = (moduloId) => {
+        const estadoModulo = progresoModulos[moduloId];
+        return !estadoModulo || estadoModulo === 'no_iniciado';
+    };
 
-return (
-    <ScrollView style={styles.container}>
-        <View style={styles.cursoItem}>
-            <Text style={styles.cursoDescription}>{cursoData.descripcion}</Text>
-            <View style={styles.frameContainer}>
-                <View style={styles.cursoImageContainer}>
-                    {cursoData.imagen ? (
-                        <Image source={{ uri: cursoData.imagen }} style={styles.cursoImage} />
-                    ) : (
-                        <Text>No hay imagen disponible</Text>
-                    )}
-                </View>
+    const formatDuration = (duration) => {
+        return duration; // Placeholder
+    };
+
+    const handlePressVideo = (contenido) => {
+        if (contenido.video) {
+            const videoUrl = `http://localhost:8000/api/${contenido.video.replace('http://localhost:8000/', '')}`;
+            // Suponiendo que cursoId está disponible en el scope de esta función
+            // Si no, necesitarás modificar la función para que tenga acceso a cursoId
+            navigation.navigate('VideoPlayerScreen', { videoUrl, cursoId });
+        } else {
+            console.warn('No hay video para este contenido');
+        }
+    };
+
+    const handlePressCuestionario = (idCuestionario) => {
+        if (idCuestionario) {
+            navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario });
+        } else {
+            console.error('Cuestionario ID es undefined.');
+        }
+    };
+
+    const renderHeader = (section, _, isActive) => {
+        const locked = isModuleLocked(section.id_modulo);
+        return (
+            <View style={isActive ? styles.headerActive : styles.header}>
+                <Text style={styles.headerText}>{section.nombre}</Text>
+                {locked && <FontAwesome name="lock" size={24} color="black" />}
             </View>
-            <View style={styles.separator} />
-        </View>
+        );
+    };
 
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Detalles del Curso</Text>
-            <Button
-                title="Ver Video"
-                onPress={() => navigation.navigate('VideoPlayerScreen', { videoUrl })}
+    const updateActiveSections = (sections) => {
+        const filteredSections = sections.filter((sectionIndex) => {
+            const section = cursoData.modulos[sectionIndex];
+            return section.activo;
+        });
+        setActiveSections(filteredSections);
+    };
+
+    const renderContent = section => {
+        const locked = isModuleLocked(section.id_modulo);
+        if (locked) return null;
+
+        return (
+            <View style={styles.content}>
+                {section.descripcion && <Text style={styles.contentText}>{section.descripcion}</Text>}
+                {Array.isArray(section.contenidos) && section.contenidos.map((contenido, index) => (
+                    <View key={contenido.id ? contenido.id.toString() : index.toString()} style={styles.contentItem}>
+                        <TouchableOpacity onPress={() => handlePressVideo(contenido)}>
+                            <Text style={styles.contentItemTitle}>{contenido.titulo}</Text>
+                        </TouchableOpacity>
+                        {contenido.duracion_video && (
+                            <Text style={styles.contentDuration}>Duración: {formatDuration(contenido.duracion_video)}</Text>
+                        )}
+                    </View>
+                ))}
+                {section.cuestionario && (
+                    <TouchableOpacity onPress={() => handlePressCuestionario(section.cuestionario.id_cuestionario)}>
+                        <Text style={styles.cuestionarioTitle}>{section.cuestionario.nombre}</Text>
+                    </TouchableOpacity>
+                )}
+            </View>
+        );
+    };
+
+    if (isLoading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" />
+                <Text>Cargando información del curso...</Text>
+            </View>
+        );
+    }
+
+    return (
+        <ScrollView style={styles.container}>
+            <View style={styles.cursoItem}>
+                <Text style={styles.cursoDescription}>{cursoData.descripcion}</Text>
+                <View style={styles.frameContainer}>
+                    <View style={styles.cursoImageContainer}>
+                        {cursoData.imagen ? (
+                            <Image source={{ uri: cursoData.imagen }} style={styles.cursoImage} />
+                        ) : (
+                            <Text>No hay imagen disponible</Text>
+                        )}
+                    </View>
+                </View>
+                <View style={styles.separator} />
+            </View>
+
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>Detalles del Curso</Text>
+                <Button
+                    title="Ver Video"
+                    onPress={() => navigation.navigate('VideoPlayerScreen', { videoUrl })}
+                />
+            </View>
+
+            <Accordion
+                sections={cursoData.modulos || []}
+                activeSections={activeSections}
+                renderHeader={renderHeader}
+                renderContent={renderContent}
+                onChange={updateActiveSections}
             />
-        </View>
-
-        <Accordion
-            sections={cursoData.modulos || []}
-            activeSections={activeSections}
-            renderHeader={renderHeader}
-            renderContent={renderContent}
-            onChange={updateActiveSections}
-        />
-    </ScrollView>
-);
+        </ScrollView>
+    );
 };
 
 // Estilos
