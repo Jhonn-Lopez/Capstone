@@ -121,7 +121,7 @@ const CursoModulosScreen = ({ route }) => {
 
     const handlePressCuestionario = (idCuestionario) => {
         if (idCuestionario) {
-            navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario });
+            navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario, cursoId: cursoId });
         } else {
             console.error('Cuestionario ID es undefined.');
         }

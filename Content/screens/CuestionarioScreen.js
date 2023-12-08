@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const CuestionarioScreen = ({ route }) => {
-  const { cuestionarioId } = route.params;
+  const { cuestionarioId, cursoId } = route.params;
   const [cuestionario, setCuestionario] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -20,7 +21,24 @@ const CuestionarioScreen = ({ route }) => {
           headers: { 'Authorization': `Token ${token}` },
         });
         setCuestionario(response.data);
-        navigation.setOptions({ title: response.data.nombre });
+        navigation.setOptions({
+          headerShown: true,
+          headerTitle: cuestionario.nombre,
+          headerLeft: () => (
+            <TouchableOpacity
+              style={styles.headerButton}
+              onPress={() => navigation.navigate('CursoModulos', { cursoId: cursoId })}>
+              <Ionicons name="arrow-back" size={24} color="#003366" />
+            </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <TouchableOpacity
+              style={styles.headerButton}
+              onPress={() => navigation.toggleDrawer()}>
+              <Ionicons name="md-menu" size={24} color="#003366" />
+            </TouchableOpacity>
+          ),
+        });
       } catch (error) {
         console.error('Error fetching cuestionario details: ', error);
         Alert.alert('Error', 'No se pudo cargar el cuestionario.');
@@ -30,7 +48,7 @@ const CuestionarioScreen = ({ route }) => {
     };
 
     fetchCuestionario();
-  }, [cuestionarioId]);
+  }, [cuestionarioId, cursoId]);
 
   const handleSelectAnswer = (preguntaId, respuestaId) => {
     setSelectedAnswers(prevSelectedAnswers => ({
@@ -41,16 +59,16 @@ const CuestionarioScreen = ({ route }) => {
 
   const handleSubmit = () => {
     const preguntasIncorrectas = [];
-  
+
     cuestionario.preguntas.forEach((pregunta) => {
       const respuestaSeleccionadaId = selectedAnswers[pregunta.id_pregunta];
       const respuestaCorrecta = pregunta.respuestas.find((respuesta) => respuesta.correcta);
-  
+
       if (!respuestaCorrecta || respuestaCorrecta.id_respuesta !== respuestaSeleccionadaId) {
         preguntasIncorrectas.push(pregunta.id_pregunta);
       }
     });
-  
+
     if (preguntasIncorrectas.length > 0) {
       const mensaje = `Revisa las respuestas de las siguientes preguntas: ${preguntasIncorrectas.join(', ')}`;
       Alert.alert('Respuestas incorrectas', mensaje);
@@ -77,7 +95,7 @@ const CuestionarioScreen = ({ route }) => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {cuestionario.preguntas.map((pregunta) => (
         <View key={pregunta.id_pregunta} style={styles.preguntaContainer}>
           <Text style={styles.pregunta}>{pregunta.texto}</Text>
@@ -158,6 +176,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+
+  headerButton: {
+    paddingHorizontal: 10,
+},
+
 });
 
 export default CuestionarioScreen;
