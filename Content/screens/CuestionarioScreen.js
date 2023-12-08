@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const CuestionarioScreen = ({ route }) => {
-  const { cuestionarioId, cursoId } = route.params;
+  const { cuestionarioId, cursoId, moduloId } = route.params;
   const [cuestionario, setCuestionario] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -21,30 +21,33 @@ const CuestionarioScreen = ({ route }) => {
           headers: { 'Authorization': `Token ${token}` },
         });
         setCuestionario(response.data);
-        navigation.setOptions({
-          headerShown: true,
-          headerTitle: cuestionario.nombre,
-          headerLeft: () => (
-            <TouchableOpacity
-              style={styles.headerButton}
-              onPress={() => navigation.navigate('CursoModulos', { cursoId: cursoId })}>
-              <Ionicons name="arrow-back" size={24} color="#003366" />
-            </TouchableOpacity>
-          ),
-          headerRight: () => (
-            <TouchableOpacity
-              style={styles.headerButton}
-              onPress={() => navigation.toggleDrawer()}>
-              <Ionicons name="md-menu" size={24} color="#003366" />
-            </TouchableOpacity>
-          ),
-        });
+        console.log("Cuestionario obtenido:", response.data);
       } catch (error) {
         console.error('Error fetching cuestionario details: ', error);
         Alert.alert('Error', 'No se pudo cargar el cuestionario.');
       } finally {
         setIsLoading(false);
       }
+
+
+      navigation.setOptions({
+        headerShown: true,
+        headerTitle: cuestionario.nombre,
+        headerLeft: () => (
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() => navigation.navigate('CursoModulos', { cursoId: cursoId })}>
+            <Ionicons name="arrow-back" size={24} color="#003366" />
+          </TouchableOpacity>
+        ),
+        headerRight: () => (
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() => navigation.toggleDrawer()}>
+            <Ionicons name="md-menu" size={24} color="#003366" />
+          </TouchableOpacity>
+        ),
+      });
     };
 
     fetchCuestionario();
@@ -57,7 +60,7 @@ const CuestionarioScreen = ({ route }) => {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const preguntasIncorrectas = [];
 
     cuestionario.preguntas.forEach((pregunta) => {
@@ -73,7 +76,26 @@ const CuestionarioScreen = ({ route }) => {
       const mensaje = `Revisa las respuestas de las siguientes preguntas: ${preguntasIncorrectas.join(', ')}`;
       Alert.alert('Respuestas incorrectas', mensaje);
     } else {
-      Alert.alert('¡Bien hecho!', 'Todas las respuestas son correctas.');
+      console.log("Todas las respuestas son correctas.");
+      console.log("ID del módulo actual:", moduloId);
+
+      try {
+        const token = await SecureStore.getItemAsync('userToken');
+        const siguienteModuloId = moduloId + 1;
+
+        // Intenta activar el siguiente módulo
+        await axios.post(`http://localhost:8000/api/modulos/${siguienteModuloId}/activar`, {}, {
+          headers: { 'Authorization': `Token ${token}` },
+        });
+
+        console.log("Siguiente módulo activado:", siguienteModuloId);
+        Alert.alert('¡Bien hecho!', 'Todas las respuestas son correctas.');
+        navigation.navigate('CursoModulos', { cursoId: cursoId });
+
+      } catch (error) {
+        console.error('Error al activar el siguiente módulo: ', error);
+        Alert.alert('Error', 'No se pudo activar el siguiente módulo.');
+      }
     }
   };
 
@@ -179,7 +201,7 @@ const styles = StyleSheet.create({
 
   headerButton: {
     paddingHorizontal: 10,
-},
+  },
 
 });
 

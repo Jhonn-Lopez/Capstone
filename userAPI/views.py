@@ -207,3 +207,15 @@ class ProgresoModulosUsuario(APIView):
         progreso_modulos = ProgresoUsuario.objects.filter(usuario=request.user, curso__id=curso_id)
         serializer = ProgresoUsuarioSerializer(progreso_modulos, many=True)
         return Response(serializer.data)
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def activar_modulo(request, modulo_id):
+    usuario = request.user
+    try:
+        progreso = ProgresoUsuario.objects.get(usuario=usuario, modulo_id=modulo_id)
+        progreso.estado = 'activo'
+        progreso.save()
+        return Response({'status': 'Modulo activado'})
+    except ProgresoUsuario.DoesNotExist:
+        return Response({'error': 'Modulo no encontrado'}, status=404)

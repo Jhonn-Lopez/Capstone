@@ -119,9 +119,9 @@ const CursoModulosScreen = ({ route }) => {
         }
     };
 
-    const handlePressCuestionario = (idCuestionario) => {
+    const handlePressCuestionario = (idCuestionario, idModulo) => {
         if (idCuestionario) {
-            navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario, cursoId: cursoId });
+            navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario, cursoId: cursoId, moduloId: idModulo });
         } else {
             console.error('Cuestionario ID es undefined.');
         }
@@ -163,9 +163,9 @@ const CursoModulosScreen = ({ route }) => {
                     </View>
                 ))}
                 {section.cuestionario && (
-                    <TouchableOpacity onPress={() => handlePressCuestionario(section.cuestionario.id_cuestionario)}>
-                        <Text style={styles.cuestionarioTitle}>{section.cuestionario.nombre}</Text>
-                    </TouchableOpacity>
+                <TouchableOpacity onPress={() => handlePressCuestionario(section.cuestionario.id_cuestionario, section.id_modulo)}>
+                    <Text style={styles.cuestionarioTitle}>{section.cuestionario.nombre}</Text>
+                </TouchableOpacity>
                 )}
             </View>
         );

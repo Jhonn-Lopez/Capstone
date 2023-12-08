@@ -6,7 +6,7 @@ from .views import (
     PreguntaViewSet, RespuestaViewSet, ProgresoCursoViewSet, 
     ProgresoCursoNoIniciadoViewSet, ProgresoCursoActivoViewSet, 
     ProgresoCursoCompletadoViewSet, CursoProgresoViewSet,
-    ProgresoModulosUsuario
+    ProgresoModulosUsuario, activar_modulo
 )
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested import routers
@@ -35,5 +35,6 @@ urlpatterns = [
     path('change-password/', change_password, name='change_password'),
     path('', include(router.urls)),
     path('', include(modulos_router.urls)),
-    path('progreso_modulos_usuario/<int:curso_id>/', ProgresoModulosUsuario.as_view(), name='progreso_modulos_usuario')
+    path('progreso_modulos_usuario/<int:curso_id>/', ProgresoModulosUsuario.as_view(), name='progreso_modulos_usuario'),
+    path('modulos/<int:modulo_id>/activar', activar_modulo, name='activar_modulo'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
