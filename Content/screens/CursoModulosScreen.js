@@ -110,9 +110,8 @@ const CursoModulosScreen = ({ route }) => {
 
     const handlePressVideo = (contenido) => {
         if (contenido.video) {
-            const videoUrl = `http://localhost:8000/api/${contenido.video.replace('http://localhost:8000/', '')}`;
-            // Suponiendo que cursoId está disponible en el scope de esta función
-            // Si no, necesitarás modificar la función para que tenga acceso a cursoId
+            // Utiliza directamente la URL del campo 'video'
+            const videoUrl = contenido.video;
             navigation.navigate('VideoPlayerScreen', { videoUrl, cursoId });
         } else {
             console.warn('No hay video para este contenido');

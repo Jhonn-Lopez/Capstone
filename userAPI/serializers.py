@@ -49,7 +49,7 @@ class ContenidoSerializer(serializers.ModelSerializer):
     id_contenido = serializers.IntegerField(source='id')
     class Meta:
         model = Contenido
-        fields = ['id_contenido', 'titulo', 'video', 'duracion_video', 'imagen', 'archivo']
+        fields = ['id_contenido', 'titulo', 'video', 'duracion_video', 'imagen']
 class ModuloSerializer(serializers.ModelSerializer):
     cuestionario = CuestionarioSerializer(read_only=True)
     contenidos = ContenidoSerializer(many=True, read_only=True) 

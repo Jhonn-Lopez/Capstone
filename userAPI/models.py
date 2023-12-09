@@ -107,29 +107,14 @@ class ProgresoUsuario(models.Model):
 class Contenido(models.Model):
     modulo = models.ForeignKey(Modulo, related_name='contenidos', on_delete=models.CASCADE)
     titulo = models.CharField(max_length=200)
-    video = models.FileField(upload_to='contenidos/videos/', blank=True, null=True)
-    duracion_video = models.DurationField(blank=True, null=True)  # Guarda la duración del video
+    video = models.URLField(max_length=200, blank=True, null=True)  # Campo actualizado para URL
+    duracion_video = models.DurationField(blank=True, null=True)  # Guarda la duración del video (ingresada manualmente)
     imagen = models.ImageField(upload_to='contenidos/imagenes/', blank=True, null=True)
-    archivo = models.FileField(upload_to='contenidos/archivos/', blank=True, null=True)
     activo = models.BooleanField(default=True)
 
+    # El método save se modifica para eliminar la lógica de duración del video
     def save(self, *args, **kwargs):
-        # Guardar el objeto para asegurarse de que el archivo esté en el sistema de archivos
         super(Contenido, self).save(*args, **kwargs)
-        if self.video and not self.duracion_video:
-            try:
-                file_path = self.video.path
-                if storage.exists(file_path):  # Verificar que el archivo exista
-                    # Comando actualizado para manejar nombres de archivo con espacios
-                    cmd = f"ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 -i \"{file_path}\""
-                    args = shlex.split(cmd)
-                    result = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                    duration = float(result.stdout)
-                    self.duracion_video = timedelta(seconds=round(duration))
-                    # Guardar solo el campo duracion_video
-                    super(Contenido, self).save(update_fields=['duracion_video'])
-            except Exception as e:
-                print(f"No se pudo determinar la duración del video: {e}")
 
     def __str__(self):
         return self.titulo
