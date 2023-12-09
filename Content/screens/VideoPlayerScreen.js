@@ -13,7 +13,7 @@ const VideoPlayerScreen = ({ route }) => {
 
     useEffect(() => {
         console.log("URL del video:", videoUrl);
-        
+
         navigation.setOptions({
             headerShown: true,
             headerTitle: 'Reproductor de Video',
@@ -64,6 +64,7 @@ const VideoPlayerScreen = ({ route }) => {
                 resizeMode="contain"
                 onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
                 shouldPlay
+                isMuted={false}  // Asegurarse de que el video no esté silenciado
             />
             {isBuffering && (
                 <View style={styles.buffering}>
