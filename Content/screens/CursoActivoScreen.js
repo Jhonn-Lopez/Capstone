@@ -83,7 +83,7 @@ const CursoActivoScreen = () => {
                             <TouchableOpacity
                                 className="w-full bg-yellow-500 p-3 rounded-2xl mb-3"
                                 onPress={() => continuarCurso(item.curso.id_curso)}>
-                                <Text className="text-xl font-bold text-blue-950 text-center">Continuar Curso</Text>
+                                <Text className="text-xl font-bold text-blue-950 text-center">Keep Going</Text>
                             </TouchableOpacity>
                         </View>
                     );

@@ -76,21 +76,21 @@ const HomeScreen = () => {
       <TouchableOpacity onPress={verificarCursosActivos}
         className="w-full bg-yellow-500 p-3 rounded-2xl mb-3">
         <Text className="text-xl font-bold text-blue-950 text-center">
-          Cursos Activos
+          Active Courses
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={verificarCursosSinIniciar}
         className="w-full bg-yellow-500 p-3 rounded-2xl mb-3">
         <Text className="text-xl font-bold text-blue-950 text-center">
-          Cursos Sin Iniciar
+          Available Courses
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={verificarCursosCompletados}
         className="w-full bg-yellow-500 p-3 rounded-2xl mb-3">
         <Text className="text-xl font-bold text-blue-950 text-center">
-          Cursos Completados
+          Completed Courses
         </Text>
       </TouchableOpacity>
     </View>

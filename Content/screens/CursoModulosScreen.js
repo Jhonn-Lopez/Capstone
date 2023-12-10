@@ -202,14 +202,6 @@ const CursoModulosScreen = ({ route }) => {
                 <View style={styles.separator} />
             </View>
 
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>Detalles del Curso</Text>
-                <Button
-                    title="Ver Video"
-                    onPress={() => navigation.navigate('VideoPlayerScreen', { videoUrl })}
-                />
-            </View>
-
             <Accordion
                 sections={cursoData.modulos || []}
                 activeSections={activeSections}
