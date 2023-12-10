@@ -20,7 +20,7 @@ const CursoNoIniScreen = () => {
                         }
                     });
                     setCursos(response.data);
-                    console.log("Cursos cargados:", response.data); // Añadido para depuración
+                   // console.log("Cursos cargados:", response.data); // Añadido para depuración
                 } catch (error) {
                     console.error('Error al obtener cursos no iniciados:', error);
                     Alert.alert('Error', 'No se pudo obtener los cursos no iniciados.');
@@ -31,34 +31,26 @@ const CursoNoIniScreen = () => {
         fetchCursosNoIniciados();
     }, []);
 
-    const iniciarCurso = async (cursoId) => {
-        console.log("Intentando iniciar curso con ID:", cursoId); // Añadido para depuración
-
-        if (!cursoId) {
-            console.error('Curso ID no proporcionado');
-            Alert.alert('Error', 'Curso ID no proporcionado.');
+    const iniciarCurso = async (progresoCursoId, cursoId) => {
+        console.log("Intentando iniciar curso con ID de progreso:", progresoCursoId, "y ID de curso:", cursoId);
+    
+        if (!progresoCursoId || !cursoId) {
+            console.error('ID de progreso del curso o ID de curso no proporcionado');
+            Alert.alert('Error', 'ID de progreso del curso o ID de curso no proporcionado.');
             return;
         }
-
+    
         const token = await SecureStore.getItemAsync('userToken');
         if (token) {
             try {
-                // Cambio de URL aquí
-                const response = await axios.post(`http://localhost:8000/api/progreso_curso_no_iniciado/${cursoId}/iniciar_curso/`, {}, 
+                await axios.post(`http://localhost:8000/api/progreso_curso_no_iniciado/${progresoCursoId}/iniciar_curso/`, {}, 
                 {
                     headers: {
                         'Authorization': `Token ${token}`
                     }
                 });
     
-                setCursos(cursos.map(curso => 
-                    curso.id === cursoId 
-                    ? { ...curso, estado: 'activo' } 
-                    : curso
-                ));
-    
                 navigation.navigate('CursoModulos', { cursoId });
-    
             } catch (error) {
                 console.error('Error al iniciar curso:', error);
                 Alert.alert('Error', 'No se pudo iniciar el curso.');
@@ -103,7 +95,7 @@ const CursoNoIniScreen = () => {
             <FlatList
                 data={cursos}
                 renderItem={({ item }) => {
-                    console.log(item);
+                    // console.log(item);
                     // Obtén la parte del path de la imagen sin la base URL
                     const imageRelativePath = item.curso.imagen.replace('http://localhost:8000/', '');
     
@@ -111,7 +103,7 @@ const CursoNoIniScreen = () => {
                     const imageUrl = `http://localhost:8000/api/${imageRelativePath}`;
     
                     // Imprime la URL en la consola para verificar que es correcta
-                    console.log('Cargando imagen:', imageUrl);
+                    // console.log('Cargando imagen:', imageUrl);
     
                     return (
                         <View style={styles.cursoItem}>
@@ -122,7 +114,7 @@ const CursoNoIniScreen = () => {
                             </View>                        
                             <TouchableOpacity
                                 className="w-full bg-yellow-500 p-3 rounded-2xl mb-3"
-                                onPress={() => iniciarCurso(item.id_progresoCurso)}>
+                                onPress={() => iniciarCurso(item.id_progresoCurso, item.curso.id_curso)}>
                                 <Text className="text-xl font-bold text-blue-950 text-center">Iniciar Curso</Text>
                                 
                             </TouchableOpacity>

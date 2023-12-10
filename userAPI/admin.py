@@ -1,87 +1,83 @@
 from django.contrib import admin
-from django import forms
 from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCurso, Contenido, ProgresoUsuario
+# ... (otros imports que puedas tener)
 
-# Clase Inline para Respuesta, que se muestra dentro de la interfaz de Pregunta
+# RespuestaInline
 class RespuestaInline(admin.TabularInline):
     model = Respuesta
     extra = 0
 
-# Clase Inline para Pregunta, que se muestra dentro de la interfaz de Cuestionario
+# PreguntaInline
 class PreguntaInline(admin.TabularInline):
     model = Pregunta
     inlines = [RespuestaInline]
     extra = 0
 
-# Clase Inline para Cuestionario, que se muestra dentro de la interfaz de Modulo
+# CuestionarioInline
 class CuestionarioInline(admin.StackedInline):
     model = Cuestionario
     extra = 0
 
-# Clase Inline para Modulo, que se muestra dentro de la interfaz de Curso
+# ModuloInline
 class ModuloInline(admin.StackedInline):
     model = Modulo
     extra = 0
 
-# Clase Inline para Contenido, que se muestra dentro de la interfaz de Modulo
+# ContenidoInline
 class ContenidoInline(admin.StackedInline):
     model = Contenido
     extra = 0
 
-# Clase ModelAdmin para Curso
+# CursoAdmin
 @admin.register(Curso)
 class CursoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'descripcion', 'activo')
+    list_display = ('id', 'nombre', 'descripcion', 'activo')  # Agrega 'id' aquí
     list_filter = ('activo',)
     search_fields = ('nombre',)
     inlines = [ModuloInline]
 
-# Clase ModelAdmin para Modulo
+# ModuloAdmin
 @admin.register(Modulo)
 class ModuloAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'descripcion')
+    list_display = ('id', 'nombre', 'descripcion')  # Agrega 'id' aquí
     inlines = [ContenidoInline, CuestionarioInline]
 
-# Clase ModelAdmin para Cuestionario
+# CuestionarioAdmin
 @admin.register(Cuestionario)
 class CuestionarioAdmin(admin.ModelAdmin):
-    list_display = ('modulo', 'activo')
+    list_display = ('id', 'modulo', 'activo')  # Agrega 'id' aquí
     inlines = [PreguntaInline]
 
-# Clase ModelAdmin para Pregunta
+# PreguntaAdmin
 @admin.register(Pregunta)
 class PreguntaAdmin(admin.ModelAdmin):
-    list_display = ['texto', 'cuestionario']
+    list_display = ('id', 'texto', 'cuestionario')  # Agrega 'id' aquí
     inlines = [RespuestaInline]
 
-# Clase ModelAdmin para Respuesta
+# RespuestaAdmin
 @admin.register(Respuesta)
 class RespuestaAdmin(admin.ModelAdmin):
-    list_display = ['texto', 'pregunta', 'correcta']
+    list_display = ('id', 'texto', 'pregunta', 'correcta')  # Agrega 'id' aquí
 
-# Clase ModelAdmin para ProgresoCurso
+# ProgresoCursoAdmin
 @admin.register(ProgresoCurso)
 class ProgresoCursoAdmin(admin.ModelAdmin):
-    list_display = ('usuario', 'curso', 'estado', 'fecha_inicio', 'ultima_actividad')
+    list_display = ('id', 'usuario', 'curso', 'estado', 'fecha_inicio', 'ultima_actividad')  # Agrega 'id' aquí
     list_filter = ('estado', 'curso')
     search_fields = ('usuario__email', 'curso__nombre')
 
+# ProgresoUsuarioAdmin
 @admin.register(ProgresoUsuario)
 class ProgresoUsuarioAdmin(admin.ModelAdmin):
-    list_display = ('usuario', 'curso', 'modulo', 'estado')
+    list_display = ('id', 'usuario', 'curso', 'modulo', 'estado')  # Agrega 'id' aquí
     list_filter = ('estado', 'curso', 'modulo')
     search_fields = ('usuario__email', 'curso__nombre', 'modulo__nombre')
-# Clase ModelForm personalizado para Contenido
-class ContenidoAdminForm(forms.ModelForm):
-    class Meta:
-        model = Contenido
-        fields = '__all__'  # Incluye todos los campos del modelo Contenido en el formulario
 
-# Clase ModelAdmin para Contenido
+# ContenidoAdmin
 @admin.register(Contenido)
 class ContenidoAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'modulo', 'activo')
+    list_display = ('id', 'titulo', 'modulo', 'activo')  # Agrega 'id' aquí
     list_filter = ('activo',)
     search_fields = ('titulo', 'modulo__nombre')
-    form = ContenidoAdminForm  # Usa el formulario personalizado
 
+# Agrega cualquier otra clase ModelAdmin que necesites aquí

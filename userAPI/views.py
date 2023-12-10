@@ -91,7 +91,8 @@ class CursoViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Retorna los cursos asociados al usuario autenticado a través del modelo ProgresoCurso
+        print(f"CursoViewSet: Obteniendo cursos para el usuario {self.request.user}")  # Para depuración
+        
         return Curso.objects.filter(progreso_cursos__usuario=self.request.user)
 
 class ModuloViewSet(viewsets.ModelViewSet):
@@ -204,6 +205,8 @@ class ProgresoModulosUsuario(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, curso_id):
+        print(f"ProgresoModulosUsuario: Obteniendo progreso de módulos para curso_id {curso_id} y usuario {request.user}")  # Para depuración
+       
         progreso_modulos = ProgresoUsuario.objects.filter(usuario=request.user, curso__id=curso_id)
         serializer = ProgresoUsuarioSerializer(progreso_modulos, many=True)
         return Response(serializer.data)

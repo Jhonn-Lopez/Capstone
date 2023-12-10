@@ -18,6 +18,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const CursoModulosScreen = ({ route }) => {
     const { cursoId } = route.params;
+    console.log("CursoModulosScreen recibió cursoId:", cursoId); // Para depuración
     const [cursoData, setCursoData] = useState({});
     const [progresoModulos, setProgresoModulos] = useState({});
     const [activeSections, setActiveSections] = useState([]);
@@ -27,23 +28,21 @@ const CursoModulosScreen = ({ route }) => {
 
     // Función para obtener los detalles del curso
     const fetchCursoDetails = async () => {
-        console.log("Inicio de fetchCursoDetails");
+        console.log("Inicio de fetchCursoDetails con cursoId:", cursoId); // Para depuración
         setIsLoading(true);
         const token = await SecureStore.getItemAsync('userToken');
         try {
-            console.log("Obteniendo detalles del curso");
             const responseCurso = await axios.get(`http://localhost:8000/api/cursos/${cursoId}/`, {
                 headers: { 'Authorization': `Token ${token}` },
             });
-            console.log("Detalles del curso: ", responseCurso.data);
-
+            // console.log("Respuesta de detalles del curso:", responseCurso.data); // Para depuración
+            
             let cursoActualizado = {
                 ...responseCurso.data,
                 imagen: responseCurso.data.imagen ? `http://localhost:8000/api/${responseCurso.data.imagen.replace('http://localhost:8000/', '')}` : null
             };
             setCursoData(cursoActualizado);
 
-            console.log("Obteniendo progreso del curso para el usuario");
             const responseProgresoUsuario = await axios.get(`http://localhost:8000/api/progreso_modulos_usuario/${cursoId}/`, {
                 headers: { 'Authorization': `Token ${token}` },
             });
@@ -52,13 +51,12 @@ const CursoModulosScreen = ({ route }) => {
             responseProgresoUsuario.data.forEach(item => {
                 progresoModulos[item.modulo] = item.estado;
             });
-            console.log("Progreso procesado: ", progresoModulos);
+
             setProgresoModulos(progresoModulos);
         } catch (error) {
             console.error('Error fetching course details: ', error);
         } finally {
             setIsLoading(false);
-            console.log("Final de fetchCursoDetails");
         }
     };
 
@@ -171,9 +169,9 @@ const CursoModulosScreen = ({ route }) => {
                     </View>
                 ))}
                 {section.cuestionario && (
-                <TouchableOpacity onPress={() => handlePressCuestionario(section.cuestionario.id_cuestionario, section.id_modulo)}>
-                    <Text style={styles.cuestionarioTitle}>{section.cuestionario.nombre}</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handlePressCuestionario(section.cuestionario.id_cuestionario, section.id_modulo)}>
+                        <Text style={styles.cuestionarioTitle}>{section.cuestionario.nombre}</Text>
+                    </TouchableOpacity>
                 )}
             </View>
         );
