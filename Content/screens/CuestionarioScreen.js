@@ -27,31 +27,33 @@ const CuestionarioScreen = ({ route }) => {
         Alert.alert('Error', 'No se pudo cargar el cuestionario.');
       } finally {
         setIsLoading(false);
+        navigation.setOptions({
+          headerShown: true,
+          headerTitle: cuestionario ? cuestionario.nombre : 'Cargando...',
+          headerLeft: () => (
+            <TouchableOpacity
+              style={styles.headerButton}
+              onPress={handleBackPress}>
+              <Ionicons name="arrow-back" size={24} color="#003366" />
+            </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <TouchableOpacity
+              style={styles.headerButton}
+              onPress={() => navigation.toggleDrawer()}>
+              <Ionicons name="md-menu" size={24} color="#003366" />
+            </TouchableOpacity>
+          ),
+        });
       }
-
-
-      navigation.setOptions({
-        headerShown: true,
-        headerTitle: cuestionario.nombre,
-        headerLeft: () => (
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => navigation.navigate('CursoModulos', { cursoId: cursoId })}>
-            <Ionicons name="arrow-back" size={24} color="#003366" />
-          </TouchableOpacity>
-        ),
-        headerRight: () => (
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => navigation.toggleDrawer()}>
-            <Ionicons name="md-menu" size={24} color="#003366" />
-          </TouchableOpacity>
-        ),
-      });
     };
 
     fetchCuestionario();
   }, [cuestionarioId, cursoId]);
+
+  const handleBackPress = () => {
+    navigation.navigate('CursoModulos', { cursoId: cursoId });
+  };
 
   const handleSelectAnswer = (preguntaId, respuestaId) => {
     setSelectedAnswers(prevSelectedAnswers => ({
@@ -120,7 +122,7 @@ const CuestionarioScreen = ({ route }) => {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {cuestionario.preguntas.map((pregunta) => (
         <View key={pregunta.id_pregunta} style={styles.preguntaContainer}>
-          <Text style={styles.pregunta}>{pregunta.texto}</Text>
+          <Text style={styles.pregunta}>{`${pregunta.id_pregunta}) ${pregunta.texto}`}</Text>
           {pregunta.respuestas.map((respuesta) => (
             <TouchableOpacity
               key={respuesta.id_respuesta}
@@ -141,6 +143,7 @@ const CuestionarioScreen = ({ route }) => {
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   loadingContainer: {
