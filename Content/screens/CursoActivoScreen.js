@@ -130,17 +130,17 @@ const styles = StyleSheet.create({
         marginBottom: 15, // Espacio debajo del marco
     },
     cursoImageContainer: {
-        width: '80%', // Menor que el 100% para que no tome el ancho completo
-        height: 150, // Altura fija para el contenedor de la imagen
+        width: '100%', // Menor que el 100% para que no tome el ancho completo
+        height: 180, // Altura fija para el contenedor de la imagen
         justifyContent: 'center', // Centra la imagen verticalmente
         alignItems: 'center', // Centra la imagen horizontalmente
-        marginVertical: 10, // Espaciado vertical para separar el contenedor de imagen de otros elementos
+       // marginVertical: 10, // Espaciado vertical para separar el contenedor de imagen de otros elementos
         alignSelf: 'center', // Asegura que el contenedor de la imagen también esté centrado en su contenedor padre
     },
     cursoImage: {
         width: '100%', // Ancho relativo al contenedor
         height: '100%', // Altura relativa al contenedor
-        resizeMode: 'contain', // Cambiado de 'stretch' a 'contain'
+        resizeMode: 'stretch', // Cambiado de 'stretch' a 'contain'
     },
     continuarButton: {
         backgroundColor: 'blue',
