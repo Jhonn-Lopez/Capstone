@@ -14,7 +14,7 @@ import * as SecureStore from 'expo-secure-store';
 import Accordion from 'react-native-collapsible/Accordion';
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const CursoModulosScreen = ({ route }) => {
     const { cursoId } = route.params;
@@ -23,50 +23,59 @@ const CursoModulosScreen = ({ route }) => {
     const [activeSections, setActiveSections] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
-    const videoUrl = 'https://res.cloudinary.com/dnnpkmi7n/video/upload/v1701990105/Modulo_1_-_Valores_de_Agilidad_y_Scrum_qpcjzt.mp4'; // Usar Coverr para sacar links.
+    const videoUrl = 'https://res.cloudinary.com/dnnpkmi7n/video/upload/v1701990105/Modulo_1_-_Valores_de_Agilidad_y_Scrum_qpcjzt.mp4';
 
+    // Función para obtener los detalles del curso
+    const fetchCursoDetails = async () => {
+        console.log("Inicio de fetchCursoDetails");
+        setIsLoading(true);
+        const token = await SecureStore.getItemAsync('userToken');
+        try {
+            console.log("Obteniendo detalles del curso");
+            const responseCurso = await axios.get(`http://localhost:8000/api/cursos/${cursoId}/`, {
+                headers: { 'Authorization': `Token ${token}` },
+            });
+            console.log("Detalles del curso: ", responseCurso.data);
 
+            let cursoActualizado = {
+                ...responseCurso.data,
+                imagen: responseCurso.data.imagen ? `http://localhost:8000/api/${responseCurso.data.imagen.replace('http://localhost:8000/', '')}` : null
+            };
+            setCursoData(cursoActualizado);
 
+            console.log("Obteniendo progreso del curso para el usuario");
+            const responseProgresoUsuario = await axios.get(`http://localhost:8000/api/progreso_modulos_usuario/${cursoId}/`, {
+                headers: { 'Authorization': `Token ${token}` },
+            });
+
+            let progresoModulos = {};
+            responseProgresoUsuario.data.forEach(item => {
+                progresoModulos[item.modulo] = item.estado;
+            });
+            console.log("Progreso procesado: ", progresoModulos);
+            setProgresoModulos(progresoModulos);
+        } catch (error) {
+            console.error('Error fetching course details: ', error);
+        } finally {
+            setIsLoading(false);
+            console.log("Final de fetchCursoDetails");
+        }
+    };
+
+    // useEffect para inicializar la pantalla
     useEffect(() => {
-        const fetchCursoDetails = async () => {
-            console.log("Inicio de fetchCursoDetails");
-            setIsLoading(true);
-            const token = await SecureStore.getItemAsync('userToken');
-            try {
-                console.log("Obteniendo detalles del curso");
-                const responseCurso = await axios.get(`http://localhost:8000/api/cursos/${cursoId}/`, {
-                    headers: { 'Authorization': `Token ${token}` },
-                });
-                console.log("Detalles del curso: ", responseCurso.data);
-
-                // Actualizar la imagen del curso solo una vez
-                let cursoActualizado = {
-                    ...responseCurso.data,
-                    imagen: responseCurso.data.imagen ? `http://localhost:8000/api/${responseCurso.data.imagen.replace('http://localhost:8000/', '')}` : null
-                };
-                setCursoData(cursoActualizado);
-
-                console.log("Obteniendo progreso del curso para el usuario");
-                const responseProgresoUsuario = await axios.get(`http://localhost:8000/api/progreso_modulos_usuario/${cursoId}/`, {
-                    headers: { 'Authorization': `Token ${token}` },
-                });
-
-                let progresoModulos = {};
-                responseProgresoUsuario.data.forEach(item => {
-                    progresoModulos[item.modulo] = item.estado;
-                });
-                console.log("Progreso procesado: ", progresoModulos);
-                setProgresoModulos(progresoModulos);
-            } catch (error) {
-                console.error('Error fetching course details: ', error);
-            } finally {
-                setIsLoading(false);
-                console.log("Final de fetchCursoDetails");
-            }
-        };
-
         fetchCursoDetails();
     }, [cursoId]);
+
+    // useFocusEffect para actualizar los datos cada vez que la pantalla se enfoca
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchCursoDetails();
+            return () => {
+                // Limpieza si es necesaria
+            };
+        }, [cursoId])
+    );
 
     useEffect(() => {
         if (cursoData && cursoData.nombre) {
