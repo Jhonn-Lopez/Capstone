@@ -22,36 +22,42 @@ const CuestionarioScreen = ({ route }) => {
           headers: { 'Authorization': `Token ${token}` },
         });
         setCuestionario(response.data);
-
+  
         // console.log("Cuestionario obtenido:", response.data);
       } catch (error) {
         console.error('Error fetching cuestionario details: ', error);
         Alert.alert('Error', 'No se pudo cargar el cuestionario.');
       } finally {
         setIsLoading(false);
-        navigation.setOptions({
-          headerShown: true,
-          headerTitle: cuestionario ? cuestionario.nombre : 'Cargando...',
-          headerLeft: () => (
-            <TouchableOpacity
-              style={styles.headerButton}
-              onPress={handleBackPress}>
-              <Ionicons name="arrow-back" size={24} color="#003366" />
-            </TouchableOpacity>
-          ),
-          headerRight: () => (
-            <TouchableOpacity
-              style={styles.headerButton}
-              onPress={() => navigation.toggleDrawer()}>
-              <Ionicons name="md-menu" size={24} color="#003366" />
-            </TouchableOpacity>
-          ),
-        });
       }
     };
-
+  
     fetchCuestionario();
-  }, [cuestionarioId, cursoId, moduloId]);
+  }, [cuestionarioId, progresoCursoId, navigation, moduloId]);
+  
+  useEffect(() => {
+    if (cuestionario) {
+      navigation.setOptions({
+        headerShown: true,
+        headerTitle: cuestionario.nombre || 'Cargando...',
+        headerLeft: () => (
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={handleBackPress}>
+            <Ionicons name="arrow-back" size={24} color="#003366" />
+          </TouchableOpacity>
+        ),
+        headerRight: () => (
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() => navigation.toggleDrawer()}>
+            <Ionicons name="md-menu" size={24} color="#003366" />
+          </TouchableOpacity>
+        ),
+      });
+    }
+  }, [cuestionario, navigation]);
+  
 
   const handleBackPress = () => {
     console.log("Reenviando progresoCursoId desde CuestionarioScreen:", progresoCursoId);
