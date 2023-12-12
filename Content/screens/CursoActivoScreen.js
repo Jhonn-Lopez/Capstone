@@ -33,36 +33,36 @@ const CursoActivoScreen = () => {
 
     useEffect(() => {
         navigation.setOptions({
-          headerShown: true,
-          headerLeft: () => (
-            <TouchableOpacity
-              style={styles.headerButton}
-              onPress={() => navigation.goBack()}>
-              <Ionicons
-                name="arrow-back"
-                size={24}
-                color="#003366"
-              />
-            </TouchableOpacity>
-          ),
-          headerRight: () => (
-            <TouchableOpacity
-              style={styles.headerButton}
-              onPress={() => navigation.toggleDrawer()}>
-              <Ionicons
-                name="md-menu"
-                size={24}
-                color="#003366"
-              />
-            </TouchableOpacity>
-          ),
-          title: 'Cursos Activos', // Cambia el título según corresponda
+            headerShown: true,
+            headerLeft: () => (
+                <TouchableOpacity
+                    style={styles.headerButton}
+                    onPress={() => navigation.goBack()}>
+                    <Ionicons
+                        name="arrow-back"
+                        size={24}
+                        color="#003366"
+                    />
+                </TouchableOpacity>
+            ),
+            headerRight: () => (
+                <TouchableOpacity
+                    style={styles.headerButton}
+                    onPress={() => navigation.toggleDrawer()}>
+                    <Ionicons
+                        name="md-menu"
+                        size={24}
+                        color="#003366"
+                    />
+                </TouchableOpacity>
+            ),
+            title: 'Cursos Activos', // Cambia el título según corresponda
         });
-      }, [navigation]);
+    }, [navigation]);
 
-    const continuarCurso = (cursoId) => {
+    const continuarCurso = async (cursoId, progresoCursoId) => {
         console.log('Curso ID:', cursoId);
-        navigation.navigate('CursoModulos', { cursoId });
+        navigation.navigate('CursoModulos', { cursoId, progresoCursoId });
     };
 
     return (
@@ -82,7 +82,7 @@ const CursoActivoScreen = () => {
                             </View>
                             <TouchableOpacity
                                 className="w-full bg-yellow-500 p-3 rounded-2xl mb-3"
-                                onPress={() => continuarCurso(item.curso.id_curso)}>
+                                onPress={() => continuarCurso(item.curso.id_curso, item.id_progresoCurso)}>
                                 <Text className="text-xl font-bold text-blue-950 text-center">Keep Going</Text>
                             </TouchableOpacity>
                         </View>
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
         height: 180, // Altura fija para el contenedor de la imagen
         justifyContent: 'center', // Centra la imagen verticalmente
         alignItems: 'center', // Centra la imagen horizontalmente
-       // marginVertical: 10, // Espaciado vertical para separar el contenedor de imagen de otros elementos
+        // marginVertical: 10, // Espaciado vertical para separar el contenedor de imagen de otros elementos
         alignSelf: 'center', // Asegura que el contenedor de la imagen también esté centrado en su contenedor padre
     },
     cursoImage: {

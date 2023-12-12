@@ -14,6 +14,8 @@ from .models import Curso, Modulo, Cuestionario, Pregunta, Respuesta, ProgresoCu
 from .serializers import UserSerializer, CursoSerializer, ModuloSerializer, CuestionarioSerializer, PreguntaSerializer, RespuestaSerializer, ProgresoCursoSerializer, ProgresoUsuarioSerializer
 from django.db.models import Min
 from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
+
 
 User = get_user_model()
 
@@ -191,7 +193,7 @@ class ModuloViewSet(viewsets.ModelViewSet):
         curso_id = self.kwargs.get('curso_pk')
         return Modulo.objects.filter(curso_id=curso_id)
 
-class CursoProgresoViewSet(viewsets.ReadOnlyModelViewSet):
+class CursoProgresoViewSet(viewsets.ModelViewSet):
     serializer_class = CursoSerializer
     queryset = Curso.objects.all()  # Definir un queryset genérico a nivel de clase
     permission_classes = [IsAuthenticated]
@@ -200,6 +202,16 @@ class CursoProgresoViewSet(viewsets.ReadOnlyModelViewSet):
         # Retorna los cursos asociados al progreso del curso del usuario autenticado
         user = self.request.user
         return Curso.objects.filter(progreso_cursos__usuario=user)
+    
+    @action(detail=True, methods=['post'])
+    def completar_curso(self, request, pk=None):
+        progreso_curso = get_object_or_404(ProgresoCurso, id=pk, usuario=request.user)
+        if progreso_curso.estado != 'activo':
+            return Response({'error': 'El curso no está activo para ser completado'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        progreso_curso.estado = 'completado'
+        progreso_curso.save()
+        return Response({'status': 'Curso marcado como completado'}, status=status.HTTP_200_OK)
 
 class ProgresoModulosUsuario(APIView):
     permission_classes = [IsAuthenticated]

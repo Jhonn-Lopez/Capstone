@@ -6,13 +6,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const CuestionarioScreen = ({ route }) => {
-  const { cuestionarioId, cursoId, moduloId } = route.params;
+  const { cuestionarioId, cursoId, moduloId, progresoCursoId } = route.params;
   const [cuestionario, setCuestionario] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const navigation = useNavigation();
 
   useEffect(() => {
+    console.log("ProgresoCursoId recibido en CuestionarioScreen:", progresoCursoId);
+
     const fetchCuestionario = async () => {
       const token = await SecureStore.getItemAsync('userToken');
       setIsLoading(true);
@@ -21,7 +23,7 @@ const CuestionarioScreen = ({ route }) => {
           headers: { 'Authorization': `Token ${token}` },
         });
         setCuestionario(response.data);
-        console.log("Cuestionario obtenido:", response.data);
+        // console.log("Cuestionario obtenido:", response.data);
       } catch (error) {
         console.error('Error fetching cuestionario details: ', error);
         Alert.alert('Error', 'No se pudo cargar el cuestionario.');
@@ -49,10 +51,11 @@ const CuestionarioScreen = ({ route }) => {
     };
 
     fetchCuestionario();
-  }, [cuestionarioId, cursoId]);
+  }, [cuestionarioId, cursoId, moduloId]);
 
   const handleBackPress = () => {
-    navigation.navigate('CursoModulos', { cursoId: cursoId });
+    console.log("Reenviando progresoCursoId desde CuestionarioScreen:", progresoCursoId);
+    navigation.navigate('CursoModulos', { cursoId: cursoId, progresoCursoId: progresoCursoId });
   };
 
   const handleSelectAnswer = (preguntaId, respuestaId) => {
@@ -63,42 +66,23 @@ const CuestionarioScreen = ({ route }) => {
   };
 
   const handleSubmit = async () => {
-    const preguntasIncorrectas = [];
-
-    cuestionario.preguntas.forEach((pregunta) => {
-      const respuestaSeleccionadaId = selectedAnswers[pregunta.id_pregunta];
-      const respuestaCorrecta = pregunta.respuestas.find((respuesta) => respuesta.correcta);
-
-      if (!respuestaCorrecta || respuestaCorrecta.id_respuesta !== respuestaSeleccionadaId) {
-        preguntasIncorrectas.push(pregunta.id_pregunta);
-      }
-    });
-
-    if (preguntasIncorrectas.length > 0) {
-      const mensaje = `Revisa las respuestas de las siguientes preguntas: ${preguntasIncorrectas.join(', ')}`;
-      Alert.alert('Respuestas incorrectas', mensaje);
-    } else {
-      console.log("Todas las respuestas son correctas.");
-      console.log("ID del módulo actual:", moduloId);
-
+    console.log('Progreso curso ID:', progresoCursoId);
+    if (progresoCursoId) {
       try {
         const token = await SecureStore.getItemAsync('userToken');
-        const siguienteModuloId = moduloId + 1;
-
-        // Intenta activar el siguiente módulo
-        await axios.post(`http://localhost:8000/api/modulos/${siguienteModuloId}/activar`, {}, {
+        await axios.post(`http://localhost:8000/api/progreso_curso/${progresoCursoId}/completar_curso/`, {}, {
           headers: { 'Authorization': `Token ${token}` },
         });
-
-        console.log("Siguiente módulo activado:", siguienteModuloId);
-        Alert.alert('¡Bien hecho!', 'Todas las respuestas son correctas.');
-        navigation.navigate('CursoModulos', { cursoId: cursoId });
-
+        // Resto del código de manejo después de completar el curso
       } catch (error) {
-        console.error('Error al activar el siguiente módulo: ', error);
-        Alert.alert('Error', 'No se pudo activar el siguiente módulo.');
+        console.error('Error en el proceso: ', error);
+        Alert.alert('Error', 'Ocurrió un error durante el proceso.');
       }
+    } else {
+      console.error('No se pudo obtener el ID del progreso del curso');
+      Alert.alert('Error', 'No se pudo completar el curso, inténtalo de nuevo más tarde.');
     }
+    // Resto del código
   };
 
   if (isLoading) {

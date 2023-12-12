@@ -17,8 +17,9 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const CursoModulosScreen = ({ route }) => {
-    const { cursoId } = route.params;
-    console.log("CursoModulosScreen recibió cursoId:", cursoId); // Para depuración
+    const { cursoId, progresoCursoId } = route.params;
+    console.log("CursoModulosScreen recibió cursoId:", cursoId);
+    console.log("CursoModulosScreen recibió progresoCursoId:", progresoCursoId);
     const [cursoData, setCursoData] = useState({});
     const [progresoModulos, setProgresoModulos] = useState({});
     const [activeSections, setActiveSections] = useState([]);
@@ -127,7 +128,7 @@ const CursoModulosScreen = ({ route }) => {
 
     const handlePressCuestionario = (idCuestionario, idModulo) => {
         if (idCuestionario) {
-            navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario, cursoId: cursoId, moduloId: idModulo });
+            navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario, cursoId: cursoId, moduloId: idModulo, progresoCursoId: progresoCursoId});
         } else {
             console.error('Cuestionario ID es undefined.');
         }
@@ -137,7 +138,7 @@ const CursoModulosScreen = ({ route }) => {
         const locked = isModuleLocked(section.id_modulo);
         return (
             <View style={isActive ? styles.headerActive : styles.header}>
-                <Text style={styles.headerText}>{section.nombre}</Text>
+                <Text style={styles.headerText}>{`Module ${section.id_modulo}: ${section.nombre}`}</Text>
                 {locked && <FontAwesome name="lock" size={24} color="black" />}
             </View>
         );

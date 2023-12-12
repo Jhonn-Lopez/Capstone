@@ -37,4 +37,6 @@ urlpatterns = [
     path('', include(modulos_router.urls)),
     path('progreso_modulos_usuario/<int:curso_id>/', ProgresoModulosUsuario.as_view(), name='progreso_modulos_usuario'),
     path('modulos/<int:modulo_id>/activar', activar_modulo, name='activar_modulo'),
+    path('cursos-progreso/<int:pk>/completar_curso/', CursoProgresoViewSet.as_view({'post': 'completar_curso'}), name='completar_curso'),
+    # ... otras rutas existentes ...
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
