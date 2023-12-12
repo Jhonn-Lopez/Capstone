@@ -25,8 +25,8 @@ const CursoModulosScreen = ({ route }) => {
     const [activeSections, setActiveSections] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
-    const videoUrl = 'https://res.cloudinary.com/dnnpkmi7n/video/upload/v1701990105/Modulo_1_-_Valores_de_Agilidad_y_Scrum_qpcjzt.mp4';
-
+    const [totalModulos, setTotalModulos] = useState(0);
+    
     // Función para obtener los detalles del curso
     const fetchCursoDetails = async () => {
         console.log("Inicio de fetchCursoDetails con cursoId:", cursoId); // Para depuración
@@ -37,7 +37,12 @@ const CursoModulosScreen = ({ route }) => {
                 headers: { 'Authorization': `Token ${token}` },
             });
             // console.log("Respuesta de detalles del curso:", responseCurso.data); // Para depuración
-            
+            if (responseCurso.data && responseCurso.data.modulos) {
+                const totalModulosObtenidos = responseCurso.data.modulos.length;
+                console.log('Cantidad total de módulos:', totalModulosObtenidos);
+                setTotalModulos(totalModulosObtenidos);
+              }
+
             let cursoActualizado = {
                 ...responseCurso.data,
                 imagen: responseCurso.data.imagen ? `http://localhost:8000/api/${responseCurso.data.imagen.replace('http://localhost:8000/', '')}` : null
@@ -128,7 +133,7 @@ const CursoModulosScreen = ({ route }) => {
 
     const handlePressCuestionario = (idCuestionario, idModulo) => {
         if (idCuestionario) {
-            navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario, cursoId: cursoId, moduloId: idModulo, progresoCursoId: progresoCursoId});
+            navigation.navigate('CuestionarioScreen', { cuestionarioId: idCuestionario, cursoId: cursoId, moduloId: idModulo, progresoCursoId: progresoCursoId, totalModulos: totalModulos});
         } else {
             console.error('Cuestionario ID es undefined.');
         }

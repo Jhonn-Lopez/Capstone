@@ -20,7 +20,7 @@ const CursoNoIniScreen = () => {
                         }
                     });
                     setCursos(response.data);
-                   // console.log("Cursos cargados:", response.data); // Añadido para depuración
+                    // console.log("Cursos cargados:", response.data); // Añadido para depuración
                 } catch (error) {
                     console.error('Error al obtener cursos no iniciados:', error);
                     Alert.alert('Error', 'No se pudo obtener los cursos no iniciados.');
@@ -33,24 +33,25 @@ const CursoNoIniScreen = () => {
 
     const iniciarCurso = async (progresoCursoId, cursoId) => {
         console.log("Intentando iniciar curso con ID de progreso:", progresoCursoId, "y ID de curso:", cursoId);
-    
+
         if (!progresoCursoId || !cursoId) {
             console.error('ID de progreso del curso o ID de curso no proporcionado');
             Alert.alert('Error', 'ID de progreso del curso o ID de curso no proporcionado.');
             return;
         }
-    
+
         const token = await SecureStore.getItemAsync('userToken');
         if (token) {
             try {
-                await axios.post(`http://localhost:8000/api/progreso_curso_no_iniciado/${progresoCursoId}/iniciar_curso/`, {}, 
-                {
-                    headers: {
-                        'Authorization': `Token ${token}`
-                    }
-                });
-    
-                navigation.navigate('CursoModulos', { cursoId });
+                await axios.post(`http://localhost:8000/api/progreso_curso_no_iniciado/${progresoCursoId}/iniciar_curso/`, {},
+                    {
+                        headers: {
+                            'Authorization': `Token ${token}`
+                        }
+                    });
+
+                navigation.navigate('CursoModulos', { cursoId, progresoCursoId });
+
             } catch (error) {
                 console.error('Error al iniciar curso:', error);
                 Alert.alert('Error', 'No se pudo iniciar el curso.');
@@ -59,7 +60,8 @@ const CursoNoIniScreen = () => {
             Alert.alert('Error', 'Token de autenticación no encontrado.');
         }
     };
-    
+
+
 
     useEffect(() => {
         navigation.setOptions({
@@ -98,26 +100,26 @@ const CursoNoIniScreen = () => {
                     // console.log(item);
                     // Obtén la parte del path de la imagen sin la base URL
                     const imageRelativePath = item.curso.imagen.replace('http://localhost:8000/', '');
-    
+
                     // Construye la URL final incluyendo '/api/' en medio
                     const imageUrl = `http://localhost:8000/api/${imageRelativePath}`;
-    
+
                     // Imprime la URL en la consola para verificar que es correcta
                     // console.log('Cargando imagen:', imageUrl);
-    
+
                     return (
                         <View style={styles.cursoItem}>
                             <Text style={styles.cursoTitle}>{item.curso.nombre}</Text>
                             <Text style={styles.cursoDescription}>{item.curso.descripcion}</Text>
                             <View style={styles.cursoImageContainer}>
-                            <Image source={{ uri: imageUrl }} style={styles.cursoImage} />
-                            </View>                        
+                                <Image source={{ uri: imageUrl }} style={styles.cursoImage} />
+                            </View>
                             <TouchableOpacity
                                 className="w-full bg-yellow-500 p-3 rounded-2xl mb-3"
                                 onPress={() => iniciarCurso(item.id_progresoCurso, item.curso.id_curso)}>
                                 <Text className="text-xl font-bold text-blue-950 text-center">Iniciar Curso</Text>
-                                
                             </TouchableOpacity>
+
                         </View>
                     );
                 }}
@@ -125,7 +127,7 @@ const CursoNoIniScreen = () => {
             />
         </View>
     );
-    
+
 };
 
 const styles = StyleSheet.create({
@@ -141,7 +143,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'center',
-        paddingBottom: 10 
+        paddingBottom: 10
     },
     cursoDescription: {
         fontSize: 12,
@@ -160,8 +162,8 @@ const styles = StyleSheet.create({
         resizeMode: 'stretch', // La imagen cubrirá el espacio asignado, posiblemente recortándose
         marginVertical: 10, // Espaciado vertical para separar la imagen de otros elementos
     },
-    
-    
+
+
     iniciarButton: {
         backgroundColor: 'blue',
         padding: 10,

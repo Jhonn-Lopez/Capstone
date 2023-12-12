@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const CuestionarioScreen = ({ route }) => {
-  const { cuestionarioId, cursoId, moduloId, progresoCursoId } = route.params;
+  const { cuestionarioId, cursoId, moduloId, progresoCursoId, totalModulos } = route.params;
   const [cuestionario, setCuestionario] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -22,6 +22,7 @@ const CuestionarioScreen = ({ route }) => {
           headers: { 'Authorization': `Token ${token}` },
         });
         setCuestionario(response.data);
+
         // console.log("Cuestionario obtenido:", response.data);
       } catch (error) {
         console.error('Error fetching cuestionario details: ', error);
@@ -82,19 +83,36 @@ const CuestionarioScreen = ({ route }) => {
       try {
         const token = await SecureStore.getItemAsync('userToken');
         const siguienteModuloId = moduloId + 1;
-        // Intenta activar el siguiente módulo
-        await axios.post(`http://localhost:8000/api/modulos/${siguienteModuloId}/activar`, {}, {
-          headers: { 'Authorization': `Token ${token}` },
-        });
-        console.log("Siguiente módulo activado:", siguienteModuloId);
-        Alert.alert('¡Bien hecho!', 'Todas las respuestas son correctas.');
-        navigation.navigate('CursoModulos', { cursoId: cursoId });
+        const esUltimoModulo = siguienteModuloId > totalModulos;
+
+        if (esUltimoModulo) {
+          console.log("Es el último módulo. Completando curso...");
+          await axios.post(`http://localhost:8000/api/cursos-progreso/${progresoCursoId}/completar_curso/`, {}, {
+            headers: { 'Authorization': `Token ${token}` },
+          });
+          console.log('Curso completado!');
+          Alert.alert('¡Felicitaciones!', '¡Completaste todos los módulos!', [
+            { text: 'Volver', onPress: () => handleBackPress() },
+            { text: 'Ir a inicio', onPress: () => navigation.navigate('Home') }
+          ]);
+          navigation.navigate('CursoModulos', { cursoId: cursoId, progresoCursoId: progresoCursoId });
+        } else {
+          // Intenta activar el siguiente módulo
+          await axios.post(`http://localhost:8000/api/modulos/${siguienteModuloId}/activar`, {}, {
+            headers: { 'Authorization': `Token ${token}` },
+          });
+          console.log("Siguiente módulo activado:", siguienteModuloId);
+          Alert.alert('¡Bien hecho!', 'Todas las respuestas son correctas.');
+          navigation.navigate('CursoModulos', { cursoId: cursoId, progresoCursoId: progresoCursoId });
+        }
       } catch (error) {
-        console.error('Error al activar el siguiente módulo: ', error);
-        Alert.alert('Error', 'No se pudo activar el siguiente módulo.');
+        console.error('Error al activar el siguiente módulo o completar el curso: ', error);
+        Alert.alert('Error', 'No se pudo activar el siguiente módulo o completar el curso.');
       }
     }
   };
+
+
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
