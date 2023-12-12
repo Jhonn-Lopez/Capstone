@@ -14,7 +14,6 @@ const CuestionarioScreen = ({ route }) => {
 
   useEffect(() => {
     console.log("ProgresoCursoId recibido en CuestionarioScreen:", progresoCursoId);
-
     const fetchCuestionario = async () => {
       const token = await SecureStore.getItemAsync('userToken');
       setIsLoading(true);
@@ -66,25 +65,36 @@ const CuestionarioScreen = ({ route }) => {
   };
 
   const handleSubmit = async () => {
-    console.log('Progreso curso ID:', progresoCursoId);
-    if (progresoCursoId) {
+    const preguntasIncorrectas = [];
+    cuestionario.preguntas.forEach((pregunta) => {
+      const respuestaSeleccionadaId = selectedAnswers[pregunta.id_pregunta];
+      const respuestaCorrecta = pregunta.respuestas.find((respuesta) => respuesta.correcta);
+      if (!respuestaCorrecta || respuestaCorrecta.id_respuesta !== respuestaSeleccionadaId) {
+        preguntasIncorrectas.push(pregunta.id_pregunta);
+      }
+    });
+    if (preguntasIncorrectas.length > 0) {
+      const mensaje = `Revisa las respuestas de las siguientes preguntas: ${preguntasIncorrectas.join(', ')}`;
+      Alert.alert('Respuestas incorrectas', mensaje);
+    } else {
+      console.log("Todas las respuestas son correctas.");
+      console.log("ID del módulo actual:", moduloId);
       try {
         const token = await SecureStore.getItemAsync('userToken');
-        await axios.post(`http://localhost:8000/api/progreso_curso/${progresoCursoId}/completar_curso/`, {}, {
+        const siguienteModuloId = moduloId + 1;
+        // Intenta activar el siguiente módulo
+        await axios.post(`http://localhost:8000/api/modulos/${siguienteModuloId}/activar`, {}, {
           headers: { 'Authorization': `Token ${token}` },
         });
-        // Resto del código de manejo después de completar el curso
+        console.log("Siguiente módulo activado:", siguienteModuloId);
+        Alert.alert('¡Bien hecho!', 'Todas las respuestas son correctas.');
+        navigation.navigate('CursoModulos', { cursoId: cursoId });
       } catch (error) {
-        console.error('Error en el proceso: ', error);
-        Alert.alert('Error', 'Ocurrió un error durante el proceso.');
+        console.error('Error al activar el siguiente módulo: ', error);
+        Alert.alert('Error', 'No se pudo activar el siguiente módulo.');
       }
-    } else {
-      console.error('No se pudo obtener el ID del progreso del curso');
-      Alert.alert('Error', 'No se pudo completar el curso, inténtalo de nuevo más tarde.');
     }
-    // Resto del código
   };
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -93,7 +103,6 @@ const CuestionarioScreen = ({ route }) => {
       </View>
     );
   }
-
   if (!cuestionario) {
     return (
       <View style={styles.loadingContainer}>
@@ -101,30 +110,31 @@ const CuestionarioScreen = ({ route }) => {
       </View>
     );
   }
-
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {cuestionario.preguntas.map((pregunta) => (
-        <View key={pregunta.id_pregunta} style={styles.preguntaContainer}>
-          <Text style={styles.pregunta}>{`${pregunta.id_pregunta}) ${pregunta.texto}`}</Text>
-          {pregunta.respuestas.map((respuesta) => (
-            <TouchableOpacity
-              key={respuesta.id_respuesta}
-              style={styles.respuesta}
-              onPress={() => handleSelectAnswer(pregunta.id_pregunta, respuesta.id_respuesta)}
-            >
-              <View style={styles.radioCircle}>
-                {selectedAnswers[pregunta.id_pregunta] === respuesta.id_respuesta && <View style={styles.selectedRb} />}
-              </View>
-              <Text style={styles.respuestaText}>{respuesta.texto}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      ))}
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} >
+      {
+        cuestionario.preguntas.map((pregunta) => (
+          <View key={pregunta.id_pregunta} style={styles.preguntaContainer}>
+            <Text style={styles.pregunta}>{`${pregunta.id_pregunta}) ${pregunta.texto}`}</Text>
+            {pregunta.respuestas.map((respuesta) => (
+              <TouchableOpacity
+                key={respuesta.id_respuesta}
+                style={styles.respuesta}
+                onPress={() => handleSelectAnswer(pregunta.id_pregunta, respuesta.id_respuesta)}
+              >
+                <View style={styles.radioCircle}>
+                  {selectedAnswers[pregunta.id_pregunta] === respuesta.id_respuesta && <View style={styles.selectedRb} />}
+                </View>
+                <Text style={styles.respuestaText}>{respuesta.texto}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ))
+      }
+      < TouchableOpacity style={styles.submitButton} onPress={handleSubmit} >
         <Text style={styles.submitButtonText}>Enviar respuestas</Text>
-      </TouchableOpacity>
-    </ScrollView>
+      </TouchableOpacity >
+    </ScrollView >
   );
 };
 
@@ -185,11 +195,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-
   headerButton: {
     paddingHorizontal: 10,
   },
-
 });
-
 export default CuestionarioScreen;
