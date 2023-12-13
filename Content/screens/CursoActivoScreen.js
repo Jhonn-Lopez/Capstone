@@ -56,7 +56,7 @@ const CursoActivoScreen = () => {
                     />
                 </TouchableOpacity>
             ),
-            title: 'Cursos Activos', // Cambia el título según corresponda
+            title: 'Active Courses', // Cambia el título según corresponda
         });
     }, [navigation]);
 

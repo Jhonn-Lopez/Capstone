@@ -32,22 +32,22 @@ export default function SignupScreen() {
     const handleSignup = () => {
         // Validación de contraseña y repetición de contraseña
         if (password !== repeatPassword) {
-            Alert.alert('Contraseñas no coinciden', 'Las contraseñas deben ser iguales.');
+            Alert.alert('Passwords do not match', 'Passwords must be the same.');
             return;
         }
 
         if (!isEmailValid(email)) {
-            Alert.alert('Correo electrónico no válido', 'Ingresa una dirección de correo electrónico válida.');
+            Alert.alert('Unvalid Email', 'Please insert a valid Email.');
             return;
         }
 
         if (!isPasswordValid(password)) {
-            Alert.alert('Contraseña no válida', 'La contraseña debe tener al menos 8 dígitos y un carácter especial.');
+            Alert.alert('Wrong Password', 'Password must be at least 8 characters long and have an especial character.');
             return;
         }
 
         if (!isNameValid(name) || !isNameValid(lastName)) {
-            Alert.alert('Nombre no válido', 'El nombre y el apellido solo deben contener letras y espacios.');
+            Alert.alert('Unvalid Name', 'Name and Surname must contain only letters and spaces.');
             return;
         }
         // Construye el objeto de datos para enviar al servidor
@@ -63,12 +63,12 @@ export default function SignupScreen() {
             .post('http://localhost:8000/api/register/', userData)
             .then((response) => {
                 // Procesa la respuesta del servidor, por ejemplo, mostrar un mensaje de éxito
-                Alert.alert('Registro exitoso', '¡Bienvenido! Ahora puedes iniciar sesión.')
+                Alert.alert('Register Succesfull', 'Welcome! You can login now.')
                 navigation.navigate('Login');
             })
             .catch((error) => {
                 // Maneja los errores, por ejemplo, muestra un mensaje de error
-                Alert.alert('Error de registro', 'Hubo un problema al registrarse. Verifique sus datos.');
+                Alert.alert('Register ERROR', 'There was a problem with you register Data, please verify!');
             });
     };
 

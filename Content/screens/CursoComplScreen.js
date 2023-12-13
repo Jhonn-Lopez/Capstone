@@ -55,7 +55,7 @@ const CursoComplScreen = () => {
                     />
                 </TouchableOpacity>
             ),
-            title: 'Cursos Completados', // Cambia el título según corresponda
+            title: 'Completed Courses', // Cambia el título según corresponda
         });
     }, [navigation]);
 

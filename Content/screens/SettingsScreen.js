@@ -78,29 +78,29 @@ const SettingsScreen = () => {
   const handleChangePassword = async () => {
     // Primero verifica la longitud de las contraseñas nuevas
     if (newPassword.length < 8 || confirmNewPassword.length < 8) {
-      Alert.alert("Error", "La nueva contraseña debe tener al menos 8 caracteres.");
+      Alert.alert("Error", "Password must be at least 8 characters long.");
       return;
     }
   
     // Luego verifica si las contraseñas nuevas coinciden
     if (newPassword !== confirmNewPassword) {
-      Alert.alert("Error", "Las contraseñas nuevas no coinciden.");
+      Alert.alert("Error", "Passwords don't match");
       return;
     }
 
     // Mostrar un mensaje de confirmación antes de proceder
     Alert.alert(
-      "Confirmar Cambio de Contraseña",
-      "Si cambias la contraseña, se cerrará la sesión. ¿Deseas continuar?",
+      "Please confirm Password Change",
+      "By changing Password this session will end. Do you wish to continue?",
       [
         // Botón para cancelar sin hacer nada
         {
-          text: "Cancelar",
+          text: "Cancel",
           style: "cancel"
         },
         // Botón para continuar con el cambio de contraseña
         {
-          text: "Continuar",
+          text: "Continue",
           onPress: async () => {
             try {
               const token = await SecureStore.getItemAsync('userToken');
@@ -115,7 +115,7 @@ const SettingsScreen = () => {
 
               // Si la respuesta es exitosa, mostrar alerta y cerrar sesión
               if (response.status === 200) {
-                Alert.alert("Éxito", "Tu contraseña ha sido cambiada.", [
+                Alert.alert("Success", "Your password has been changed.", [
                   {
                     text: "OK", onPress: async () => {
                       await logout();
@@ -126,7 +126,7 @@ const SettingsScreen = () => {
               }
             } catch (error) {
               // Si hay un error, mostrar una alerta de error
-              Alert.alert("Error", "Hubo un error al cambiar la contraseña.");
+              Alert.alert("Error", "There was an error while changing password.");
               console.error(error);
             }
           }

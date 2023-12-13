@@ -88,7 +88,7 @@ const CursoNoIniScreen = () => {
                     />
                 </TouchableOpacity>
             ),
-            title: 'Cursos No Iniciados',
+            title: 'Available Courses',
         });
     }, [navigation]);
 
@@ -111,13 +111,15 @@ const CursoNoIniScreen = () => {
                         <View style={styles.cursoItem}>
                             <Text style={styles.cursoTitle}>{item.curso.nombre}</Text>
                             <Text style={styles.cursoDescription}>{item.curso.descripcion}</Text>
-                            <View style={styles.cursoImageContainer}>
-                                <Image source={{ uri: imageUrl }} style={styles.cursoImage} />
+                            <View style={styles.frameContainer}>
+                                <View style={styles.cursoImageContainer}>
+                                    <Image source={{ uri: imageUrl }} style={styles.cursoImage} />
+                                </View>
                             </View>
                             <TouchableOpacity
                                 className="w-full bg-yellow-500 p-3 rounded-2xl mb-3"
                                 onPress={() => iniciarCurso(item.id_progresoCurso, item.curso.id_curso)}>
-                                <Text className="text-xl font-bold text-blue-950 text-center">Iniciar Curso</Text>
+                                <Text className="text-xl font-bold text-blue-950 text-center">Start Course</Text>
                             </TouchableOpacity>
 
                         </View>
@@ -134,6 +136,10 @@ const styles = StyleSheet.create({
     headerButton: {
         paddingHorizontal: 10,
     },
+    container: {
+        flex: 1,
+        padding: 10,
+    },
     cursoItem: {
         padding: 10,
         borderBottomWidth: 1,
@@ -147,20 +153,32 @@ const styles = StyleSheet.create({
     },
     cursoDescription: {
         fontSize: 12,
-        textAlign: 'justify'
+        textAlign: 'justify',
+        paddingBottom: 10
+    },
+    frameContainer: {
+        borderWidth: 2, // Grosor del marco
+        borderColor: '#003366', // Color del marco
+        padding: 2, // Espacio entre el marco y la imagen
+        shadowColor: '#000', // Color de la sombra
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 5, // Elevación en Android
+        marginBottom: 15, // Espacio debajo del marco
     },
     cursoImageContainer: {
-        width: '100%', // Asume el ancho completo del contenedor
+        width: '100%', // Menor que el 100% para que no tome el ancho completo
         height: 180, // Altura fija para el contenedor de la imagen
         justifyContent: 'center', // Centra la imagen verticalmente
         alignItems: 'center', // Centra la imagen horizontalmente
-        marginVertical: 10, // Espaciado vertical para separar el contenedor de imagen de otros elementos
+        // marginVertical: 10, // Espaciado vertical para separar el contenedor de imagen de otros elementos
+        alignSelf: 'center', // Asegura que el contenedor de la imagen también esté centrado en su contenedor padre
     },
     cursoImage: {
-        width: '100%', // Ancho fijo para todas las imágenes
-        height: '100%', // Altura fija para todas las imágenes
-        resizeMode: 'stretch', // La imagen cubrirá el espacio asignado, posiblemente recortándose
-        marginVertical: 10, // Espaciado vertical para separar la imagen de otros elementos
+        width: '100%', // Ancho relativo al contenedor
+        height: '100%', // Altura relativa al contenedor
+        resizeMode: 'stretch', // Cambiado de 'stretch' a 'contain'
     },
 
 

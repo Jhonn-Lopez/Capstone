@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const VideoPlayerScreen = ({ route }) => {
-    const { videoUrl, cursoId } = route.params;
+    const { videoUrl, cursoId, progresoCursoId } = route.params;
     const videoRef = useRef(null);
     const [status, setStatus] = useState({});
     const [isBuffering, setIsBuffering] = useState(false);
@@ -35,7 +35,7 @@ const VideoPlayerScreen = ({ route }) => {
     }, [navigation, videoUrl, cursoId]);
 
     const handleBackPress = () => {
-        navigation.navigate('CursoModulos', { cursoId: cursoId });
+        navigation.navigate('CursoModulos', { cursoId: cursoId, progresoCursoId:progresoCursoId });
     };
 
     const handlePlaybackStatusUpdate = (playbackStatus) => {

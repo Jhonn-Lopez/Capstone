@@ -125,7 +125,7 @@ const CursoModulosScreen = ({ route }) => {
         if (contenido.video) {
             // Utiliza directamente la URL del campo 'video'
             const videoUrl = contenido.video;
-            navigation.navigate('VideoPlayerScreen', { videoUrl, cursoId });
+            navigation.navigate('VideoPlayerScreen', { videoUrl, cursoId, progresoCursoId });
         } else {
             console.warn('No hay video para este contenido');
         }

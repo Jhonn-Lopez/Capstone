@@ -22,7 +22,7 @@ const CuestionarioScreen = ({ route }) => {
           headers: { 'Authorization': `Token ${token}` },
         });
         setCuestionario(response.data);
-  
+
         // console.log("Cuestionario obtenido:", response.data);
       } catch (error) {
         console.error('Error fetching cuestionario details: ', error);
@@ -31,10 +31,10 @@ const CuestionarioScreen = ({ route }) => {
         setIsLoading(false);
       }
     };
-  
+
     fetchCuestionario();
   }, [cuestionarioId, progresoCursoId, navigation, moduloId]);
-  
+
   useEffect(() => {
     if (cuestionario) {
       navigation.setOptions({
@@ -57,7 +57,7 @@ const CuestionarioScreen = ({ route }) => {
       });
     }
   }, [cuestionario, navigation]);
-  
+
 
   const handleBackPress = () => {
     console.log("Reenviando progresoCursoId desde CuestionarioScreen:", progresoCursoId);
@@ -81,25 +81,25 @@ const CuestionarioScreen = ({ route }) => {
       }
     });
     if (preguntasIncorrectas.length > 0) {
-      const mensaje = `Revisa las respuestas de las siguientes preguntas: ${preguntasIncorrectas.join(', ')}`;
-      Alert.alert('Respuestas incorrectas', mensaje);
+      const mensaje = `Check the following questions: ${preguntasIncorrectas.join(', ')}`;
+      Alert.alert('Oops, you have incorrect answers', mensaje);
     } else {
-      console.log("Todas las respuestas son correctas.");
-      console.log("ID del módulo actual:", moduloId);
+      console.log("Awesome, All answers are correct, congratulations!!!");
+      console.log("Current module ID:", moduloId);
       try {
         const token = await SecureStore.getItemAsync('userToken');
         const siguienteModuloId = moduloId + 1;
         const esUltimoModulo = siguienteModuloId > totalModulos;
 
         if (esUltimoModulo) {
-          console.log("Es el último módulo. Completando curso...");
+          console.log("Last Module. Completing course...");
           await axios.post(`http://localhost:8000/api/cursos-progreso/${progresoCursoId}/completar_curso/`, {}, {
             headers: { 'Authorization': `Token ${token}` },
           });
-          console.log('Curso completado!');
-          Alert.alert('¡Felicitaciones!', '¡Completaste todos los módulos!', [
-            { text: 'Volver', onPress: () => handleBackPress() },
-            { text: 'Ir a inicio', onPress: () => navigation.navigate('Home') }
+          console.log('Course Finished!');
+          Alert.alert('Congratulations!', "You've finished all modules!", [
+            { text: 'Go Back', onPress: () => handleBackPress() },
+            { text: 'Home', onPress: () => navigation.navigate('Home') }
           ]);
           navigation.navigate('CursoModulos', { cursoId: cursoId, progresoCursoId: progresoCursoId });
         } else {
@@ -107,13 +107,13 @@ const CuestionarioScreen = ({ route }) => {
           await axios.post(`http://localhost:8000/api/modulos/${siguienteModuloId}/activar`, {}, {
             headers: { 'Authorization': `Token ${token}` },
           });
-          console.log("Siguiente módulo activado:", siguienteModuloId);
-          Alert.alert('¡Bien hecho!', 'Todas las respuestas son correctas.');
+          console.log("Next module unlocked:", siguienteModuloId);
+          Alert.alert('Well done!', 'All of your answers are correct.');
           navigation.navigate('CursoModulos', { cursoId: cursoId, progresoCursoId: progresoCursoId });
         }
       } catch (error) {
-        console.error('Error al activar el siguiente módulo o completar el curso: ', error);
-        Alert.alert('Error', 'No se pudo activar el siguiente módulo o completar el curso.');
+        console.error('ERROR: Cannot activate next course: ', error);
+        Alert.alert('ERROR', 'Cannot activate next course or mark as completed.');
       }
     }
   };
@@ -123,7 +123,7 @@ const CuestionarioScreen = ({ route }) => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" />
-        <Text>Cargando cuestionario...</Text>
+        <Text>Loading Quiz...</Text>
       </View>
     );
   }
@@ -155,10 +155,13 @@ const CuestionarioScreen = ({ route }) => {
           </View>
         ))
       }
-      < TouchableOpacity style={styles.submitButton} onPress={handleSubmit} >
-        <Text style={styles.submitButtonText}>Enviar respuestas</Text>
-      </TouchableOpacity >
+      <TouchableOpacity
+        className="w-full bg-yellow-500 p-3 rounded-2xl mb-3" onPress={handleSubmit}>
+        <Text className="text-xl font-bold text-blue-950 text-center">Send Quiz</Text>
+      </TouchableOpacity>
     </ScrollView >
+
+
   );
 };
 

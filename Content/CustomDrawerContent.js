@@ -39,7 +39,7 @@ const CustomDrawerContent = (props) => {
     // Aquí también deberías borrar cualquier otro dato de usuario almacenado
   
     // Muestra una alerta indicando que el logout fue exitoso
-    Alert.alert('Se ha desconectado correctamente', '', [
+    Alert.alert('Disconnected successfully', '', [
       {
         text: 'OK',
         onPress: () => props.navigation.navigate('Login')
