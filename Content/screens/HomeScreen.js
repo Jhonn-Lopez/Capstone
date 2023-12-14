@@ -20,11 +20,11 @@ const HomeScreen = () => {
         if (response.data && response.data.length > 0) {
           navigation.navigate('CursoCompletado');
         } else {
-          Alert.alert("No hay cursos completados", "Puedes revisar si tiene cursos activos pendientes!");
+          Alert.alert("No completed courses", "Please check for uncompleted courses!");
         }
       } catch (error) {
-        console.error('Error al verificar cursos completados:', error);
-        Alert.alert('Error', 'No se pudo verificar los cursos completados.');
+        console.error('RROR: cannot verify completed courses:', error);
+        Alert.alert('ERROR', 'Unable to verify completed courses.');
       }
     }
   }, [navigation]);
@@ -41,11 +41,11 @@ const HomeScreen = () => {
         if (response.data && response.data.length > 0) {
           navigation.navigate('CursoActivo');
         } else {
-          Alert.alert("No hay cursos activos", "Puedes revisar tus cursos sin iniciar o completados!");
+          Alert.alert("No active courses", "Please check for unstarted or finished courses!");
         }
       } catch (error) {
-        console.error('Error al verificar cursos activos:', error);
-        Alert.alert('Error', 'No se pudo verificar los cursos activos.');
+        console.error('ERROR: cannot verify active courses:', error);
+        Alert.alert('ERROR', 'Unable to verify active courses.');
       }
     }
   }, [navigation]);
@@ -62,11 +62,11 @@ const HomeScreen = () => {
         if (response.data && response.data.length > 0) {
           navigation.navigate('CursoNoIniciado');
         } else {
-          Alert.alert("No hay nuevos cursos disponibles", "Espera nuevo contenido!");
+          Alert.alert("No new courses available", "Please wait for new content!");
         }
       } catch (error) {
-        console.error('Error al verificar cursos sin iniciar:', error);
-        Alert.alert('Error', 'No se pudo verificar los cursos sin iniciar.');
+        console.error('ERROR: cannot verify unstarted courses:', error);
+        Alert.alert('ERROR', 'Unable to verify unstarted courses.');
       }
     }
   }, [navigation]);

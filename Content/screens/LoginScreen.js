@@ -25,13 +25,13 @@ export default function LoginScreen() {
         setPassword(''); // Limpia el campo de contraseña
         navigation.navigate('Drawer'); // Navega al Drawer Navigator
       } else {
-        Alert.alert('Error', 'Credenciales incorrectas');
+        Alert.alert('Error', 'Wrong credentials');
       }
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        Alert.alert('Error de autenticación', 'Credenciales incorrectas');
+        Alert.alert('Authentication ERROR', 'Wrong Credentials');
       } else {
-        Alert.alert('Error', 'La información ingresada es erronea');
+        Alert.alert('ERROR', 'Input is incorrect');
       }
     }
   };
